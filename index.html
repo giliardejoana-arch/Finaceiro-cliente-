@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Controle Financeiro de Clientes</title>
-    <!-- PWA Manifest & Ícones -->
-    <link rel="manifest" href="./manifest.json?v=4">
-    <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png?v=4">
-    <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png?v=4">
+    
+    <!-- PWA Meta Tags (Manifest e Ícones serão injetados dinamicamente via Canvas + Blob para funcionar em qualquer servidor/arquivo único) -->
+    <link id="dynamicManifestLink" rel="manifest" href="./manifest.json">
+    <link id="dynamicFaviconLink" rel="icon" type="image/png" sizes="192x192" href="">
+    <link id="dynamicAppleIconLink" rel="apple-touch-icon" sizes="192x192" href="">
     <meta name="theme-color" content="#1d4ed8">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Controle Fin.">
 
-    
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -92,45 +92,19 @@
             background: #cbd5e1;
             border-radius: 9999px;
         }
-    
-        /* Tela de abertura (splash) com fundo azul chapado e ícone grande ao centro */
-        #appSplashScreen {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background-color: #1d4ed8;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.35s ease, visibility 0.35s ease;
-        }
-        #appSplashScreen.splash-hide {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        #appSplashScreen img {
-            width: 210px;
-            height: 210px;
-            border-radius: 44px;
-            box-shadow: 0 22px 48px rgba(15, 23, 42, 0.38);
-        }
-
     </style>
 </head>
-<body class="bg-[#1d4ed8] text-slate-900 min-h-screen flex flex-col selection:bg-brand-600 selection:text-white">
-    <!-- ==================== TELA DE ABERTURA (SPLASH AZUL COM ÍCONE GRANDE) ==================== -->
-    <div id="appSplashScreen" aria-hidden="true">
-        <img src="./icons/icon-512.png?v=4" alt="Controle Financeiro">
-    </div>
+<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col selection:bg-brand-600 selection:text-white">
 
-    <!-- ==================== TELA DE LOGIN / CADASTRO / CONFIGURAÇÃO FIREBASE ==================== -->
+    <!-- ==================== TELA DE LOGIN / CADASTRO COM CANVAS ANIMADO ==================== -->
     <div id="authGateScreen" class="fixed inset-0 z-50 bg-slate-100 overflow-y-auto flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden fade-in my-auto">
-            <!-- Topo -->
-            <div class="bg-brand-700 text-white p-5 text-center">
-                <img src="./icons/icon-192.png?v=4" alt="Ícone Controle Financeiro" class="w-16 h-16 rounded-2xl mx-auto mb-3 shadow-md border border-white/20">
+        <!-- Canvas animado de fundo (partículas financeiras suaves conectadas e cifrões flutuantes) -->
+        <canvas id="authBgCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
+
+        <div class="relative z-10 w-full max-w-md bg-white/95 backdrop-blur-xs rounded-2xl shadow-xl border border-slate-200 overflow-hidden fade-in my-auto">
+            <!-- Topo com Canvas Sutil e Ícone Gerado -->
+            <div class="relative bg-brand-700 text-white p-5 text-center overflow-hidden">
+                <img id="authHeaderIconImg" src="" alt="Ícone Controle Financeiro" class="w-16 h-16 rounded-2xl mx-auto mb-3 shadow-md border border-white/25 bg-brand-600">
                 <h1 class="text-xl font-extrabold tracking-tight">Controle Financeiro</h1>
                 <p id="authStatusSubtitle" class="text-xs text-brand-100 mt-1">Acesso seguro com login e senha via Firebase</p>
             </div>
@@ -168,6 +142,16 @@
                     </button>
                 </form>
 
+                <!-- Botão discreto de instalação também disponível na tela inicial -->
+                <div id="authInstallPromptBox" class="hidden pt-1">
+                    <button type="button" onclick="installPWAApp()" class="w-full py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 font-bold text-xs transition flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>Instalar Aplicativo no Celular</span>
+                    </button>
+                </div>
+
                 <!-- Ações auxiliares: Configurar/Trocar Firebase -->
                 <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
                     <span id="firebaseConnectionBadge" class="text-slate-500 font-medium">Status: Aguardando Firebase</span>
@@ -184,7 +168,7 @@
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden fade-in max-h-[92vh] flex flex-col">
             <div class="px-5 py-4 bg-brand-700 text-white flex items-center justify-between shrink-0">
                 <div>
-                    <h3 class="text-base font-extrabold">Configurar Firebase (Sem expor senha no GitHub)</h3>
+                    <h3 class="text-base font-extrabold">Configurar Firebase</h3>
                     <p class="text-[11px] text-brand-100">Fica salvo apenas neste aparelho/navegador</p>
                 </div>
                 <button type="button" onclick="closeFirebaseConfigModal()" class="p-1.5 rounded-lg hover:bg-brand-600 transition">
@@ -231,7 +215,6 @@
         </div>
     </div>
 
-
     <!-- ==================== BARRA SUPERIOR (HEADER) ==================== -->
     <header class="bg-brand-700 text-white sticky top-0 z-30 shadow-md">
         <div class="max-w-3xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
@@ -243,7 +226,7 @@
                     </svg>
                 </button>
 
-                <!-- Botão Três Barrinhas (Menu Gaveta Backup) no lugar do cifrão -->
+                <!-- Botão Três Barrinhas (Menu Gaveta Backup) -->
                 <button id="btnMenuDrawer" onclick="openBackupDrawer()" class="bg-white/15 hover:bg-white/25 active:scale-95 p-2.5 rounded-xl shrink-0 transition flex items-center justify-center" aria-label="Abrir menu de backup">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -310,8 +293,13 @@
                     <p class="font-bold truncate" id="drawerUserEmail">Não autenticado</p>
                     <p class="text-[11px] mt-0.5">Perfil: <span id="drawerUserRole" class="font-extrabold text-brand-700">Aguardando</span></p>
                 </div>
-                <p id="installDrawerHint" class="hidden">
-                    <button onclick="installPWAApp()" class="w-full py-2.5 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm transition">Instalar Aplicativo</button>
+                <p id="installDrawerHint">
+                    <button onclick="installPWAApp()" class="w-full py-2.5 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm transition flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>Instalar Aplicativo</span>
+                    </button>
                 </p>
                 <div class="flex gap-2">
                     <button type="button" onclick="closeBackupDrawer(); openFirebaseConfigModal();" class="flex-1 py-2 px-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs transition">
@@ -328,10 +316,10 @@
     <!-- Banner de Instalação na Primeira Abertura no Celular -->
     <div id="installAppBanner" class="hidden fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto bg-slate-900 text-white rounded-2xl p-4 shadow-2xl border border-slate-700 fade-in">
         <div class="flex items-center gap-3">
-            <img src="./icons/icon-192.png?v=4" alt="Ícone do App" class="w-12 h-12 rounded-xl shrink-0 border border-white/15">
+            <img id="bannerInstallIconImg" src="" alt="Ícone do App" class="w-12 h-12 rounded-xl shrink-0 border border-white/15 bg-brand-600">
             <div class="min-w-0 flex-1">
                 <p class="text-sm font-extrabold truncate">Instalar Controle Financeiro</p>
-                <p id="installBannerDesc" class="text-xs text-slate-300 leading-snug mt-0.5">Adicione à tela inicial e à gaveta de apps do seu celular.</p>
+                <p id="installBannerDesc" class="text-xs text-slate-300 leading-snug mt-0.5">Adicione à tela inicial e abra como aplicativo no seu celular.</p>
             </div>
         </div>
         <div class="mt-3 flex gap-2.5">
@@ -346,15 +334,18 @@
         <!-- TELA 1: LISTA DE CLIENTES -->
         <section id="viewHome" class="fade-in space-y-5">
             
-            <!-- Resumo Geral da Carteira -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 block">Total a Receber</span>
-                    <span id="globalPendingAmount" class="text-xl sm:text-2xl font-extrabold text-amber-600 mt-1 block">R$ 0,00</span>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 block">Total Recebido</span>
-                    <span id="globalPaidAmount" class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-1 block">R$ 0,00</span>
+            <!-- Resumo Geral da Carteira com Canvas Animado Sutil de Ondas/Partículas -->
+            <div class="relative overflow-hidden rounded-2xl bg-white p-3.5 sm:p-4 shadow-sm border border-slate-200/80">
+                <canvas id="summaryCardsCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
+                <div class="relative z-10 grid grid-cols-2 gap-3">
+                    <div class="bg-white/85 backdrop-blur-xs p-3.5 rounded-xl border border-amber-100/90 shadow-2xs">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 block">Total a Receber</span>
+                        <span id="globalPendingAmount" class="text-xl sm:text-2xl font-extrabold text-amber-600 mt-1 block">R$ 0,00</span>
+                    </div>
+                    <div class="bg-white/85 backdrop-blur-xs p-3.5 rounded-xl border border-emerald-100/90 shadow-2xs">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 block">Total Recebido</span>
+                        <span id="globalPaidAmount" class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-1 block">R$ 0,00</span>
+                    </div>
                 </div>
             </div>
 
@@ -500,7 +491,6 @@
     </main>
 
     <!-- ==================== ÁREA OCULTA PARA RENDERIZAÇÃO DO PRINT (EXTRATO VISUAL) ==================== -->
-    <!-- Este bloco é capturado pelo html2canvas para gerar uma imagem PNG limpa e profissional -->
     <div style="position: fixed; left: -9999px; top: 0; z-index: -1;">
         <div id="receiptCaptureCard" class="w-[420px] bg-white p-6 text-slate-900 font-sans border-2 border-slate-200">
             <!-- Cabeçalho do Comprovante -->
@@ -741,19 +731,336 @@
 
     <!-- ==================== LÓGICA JAVASCRIPT ==================== -->
     <script>
-        // Chaves de armazenamento no localStorage
-        const STORAGE_KEY = 'controle_financeiro_clientes_v1';
+        // ==================== 1. GERAÇÃO DE ÍCONES E MANIFEST PWA VIA CANVAS ====================
+        // Gera ícones PNG reais (192x192 e 512x512) em memória via Canvas para que o navegador
+        // sempre encontre os ícones válidos e libere a instalação como aplicativo no celular.
+        function generateAppIconDataUrl(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
 
-        // Estado global da aplicação
+            // Fundo azul arredondado
+            const radius = size * 0.22;
+            ctx.fillStyle = '#1d4ed8';
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.quadraticCurveTo(size, 0, size, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.quadraticCurveTo(size, size, size - radius, size);
+            ctx.lineTo(radius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.closePath();
+            ctx.fill();
+
+            // Gradiente sutil de brilho no topo
+            const grad = ctx.createLinearGradient(0, 0, size, size);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0.16)');
+            grad.addColorStop(1, 'rgba(15, 23, 42, 0.22)');
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Anel interno
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+            ctx.lineWidth = size * 0.03;
+            ctx.beginPath();
+            ctx.arc(size * 0.48, size * 0.48, size * 0.31, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Cifrão branco central
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `800 ${Math.round(size * 0.46)}px Inter, Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('$', size * 0.48, size * 0.50);
+
+            // Selo verde de verificado no canto inferior direito
+            const badgeR = size * 0.16;
+            const badgeX = size * 0.74;
+            const badgeY = size * 0.74;
+
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.arc(badgeX, badgeY, badgeR, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = size * 0.025;
+            ctx.stroke();
+
+            // Check branco dentro do selo verde
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = size * 0.036;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(badgeX - badgeR * 0.42, badgeY + badgeR * 0.02);
+            ctx.lineTo(badgeX - badgeR * 0.10, badgeY + badgeR * 0.34);
+            ctx.lineTo(badgeX + badgeR * 0.46, badgeY - badgeR * 0.30);
+            ctx.stroke();
+
+            return canvas.toDataURL('image/png');
+        }
+
+        function setupDynamicPWAAssets() {
+            try {
+                const icon192 = generateAppIconDataUrl(192);
+                const icon512 = generateAppIconDataUrl(512);
+
+                // Atualiza favicons e imagens na interface
+                const favLink = document.getElementById('dynamicFaviconLink');
+                const appleLink = document.getElementById('dynamicAppleIconLink');
+                const authIconImg = document.getElementById('authHeaderIconImg');
+                const bannerIconImg = document.getElementById('bannerInstallIconImg');
+
+                if (favLink) favLink.href = icon192;
+                if (appleLink) appleLink.href = icon192;
+                if (authIconImg) authIconImg.src = icon192;
+                if (bannerIconImg) bannerIconImg.src = icon192;
+
+                // Resolve URL base atual para start_url e scope funcionarem no GitHub Pages ou domínio próprio
+                const currentUrl = new URL('./', window.location.href).href;
+
+                const manifestObj = {
+                    name: 'Controle Financeiro de Clientes',
+                    short_name: 'Controle Fin.',
+                    description: 'Gestão financeira de clientes, compras parceladas e extratos para WhatsApp.',
+                    start_url: window.location.href.split('#')[0],
+                    scope: currentUrl,
+                    display: 'standalone',
+                    orientation: 'portrait',
+                    background_color: '#f1f5f9',
+                    theme_color: '#1d4ed8',
+                    icons: [
+                        {
+                            src: icon192,
+                            sizes: '192x192',
+                            type: 'image/png',
+                            purpose: 'any'
+                        },
+                        {
+                            src: icon192,
+                            sizes: '192x192',
+                            type: 'image/png',
+                            purpose: 'maskable'
+                        },
+                        {
+                            src: icon512,
+                            sizes: '512x512',
+                            type: 'image/png',
+                            purpose: 'any'
+                        },
+                        {
+                            src: icon512,
+                            sizes: '512x512',
+                            type: 'image/png',
+                            purpose: 'maskable'
+                        }
+                    ]
+                };
+
+                const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+                const manifestBlobUrl = URL.createObjectURL(manifestBlob);
+                const manifestLink = document.getElementById('dynamicManifestLink');
+                if (manifestLink) {
+                    manifestLink.href = manifestBlobUrl;
+                }
+            } catch (e) {
+                console.warn('Fallback de manifest:', e);
+            }
+        }
+
+        // ==================== 2. ANIMAÇÕES EM HTML5 CANVAS ====================
+        let authCanvasAnimId = null;
+        let summaryCanvasAnimId = null;
+
+        // Animação 1: Partículas financeiras conectadas e cifrões suaves na tela de login
+        function startAuthCanvasAnimation() {
+            const canvas = document.getElementById('authBgCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let width = 0;
+            let height = 0;
+            let particles = [];
+            const symbols = ['$', 'R$', '%', '+'];
+
+            function resize() {
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            function initParticles() {
+                const count = Math.min(34, Math.max(16, Math.floor((width * height) / 26000)));
+                particles = [];
+                for (let i = 0; i < count; i++) {
+                    const isGreen = i % 3 === 0;
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.45,
+                        vy: (Math.random() - 0.5) * 0.45 - 0.12,
+                        radius: 2.2 + Math.random() * 2.5,
+                        color: isGreen ? 'rgba(16, 185, 129, 0.35)' : 'rgba(37, 99, 235, 0.30)',
+                        lineColor: isGreen ? 'rgba(16, 185, 129, 0.10)' : 'rgba(37, 99, 235, 0.10)',
+                        symbol: i % 4 === 0 ? symbols[i % symbols.length] : null,
+                        phase: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+
+            resize();
+            initParticles();
+            window.addEventListener('resize', () => {
+                resize();
+                initParticles();
+            });
+
+            function draw() {
+                const gate = document.getElementById('authGateScreen');
+                if (gate && gate.classList.contains('hidden')) {
+                    authCanvasAnimId = null;
+                    return;
+                }
+
+                ctx.clearRect(0, 0, width, height);
+
+                // Atualiza e desenha conexões
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.phase += 0.02;
+
+                    if (p.x < -20) p.x = width + 20;
+                    if (p.x > width + 20) p.x = -20;
+                    if (p.y < -20) p.y = height + 20;
+                    if (p.y > height + 20) p.y = -20;
+
+                    // Linhas entre partículas próximas
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist < 135) {
+                            ctx.strokeStyle = p.lineColor;
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    }
+
+                    // Ponto ou símbolo financeiro flutuante
+                    if (p.symbol) {
+                        ctx.fillStyle = p.color;
+                        ctx.font = '700 13px Inter, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(p.symbol, p.x, p.y + Math.sin(p.phase) * 3);
+                    } else {
+                        ctx.fillStyle = p.color;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                authCanvasAnimId = requestAnimationFrame(draw);
+            }
+
+            if (authCanvasAnimId) cancelAnimationFrame(authCanvasAnimId);
+            draw();
+        }
+
+        // Animação 2: Ondas suaves e partículas decorativas no card de resumo do painel
+        function startSummaryCanvasAnimation() {
+            const canvas = document.getElementById('summaryCardsCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let w = 0;
+            let h = 0;
+            let tick = 0;
+
+            function resize() {
+                const parent = canvas.parentElement;
+                if (!parent) return;
+                const rect = parent.getBoundingClientRect();
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                w = rect.width;
+                h = rect.height;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            resize();
+            window.addEventListener('resize', resize);
+
+            function render() {
+                if (w === 0 || h === 0) resize();
+                ctx.clearRect(0, 0, w, h);
+                tick += 0.025;
+
+                // Onda azul sutil
+                ctx.beginPath();
+                ctx.moveTo(0, h);
+                for (let x = 0; x <= w; x += 12) {
+                    const y = h * 0.58 + Math.sin(x * 0.015 + tick) * 10;
+                    ctx.lineTo(x, y);
+                }
+                ctx.lineTo(w, h);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(37, 99, 235, 0.06)';
+                ctx.fill();
+
+                // Onda esmeralda sutil
+                ctx.beginPath();
+                ctx.moveTo(0, h);
+                for (let x = 0; x <= w; x += 12) {
+                    const y = h * 0.68 + Math.cos(x * 0.018 - tick * 0.9) * 8;
+                    ctx.lineTo(x, y);
+                }
+                ctx.lineTo(w, h);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.06)';
+                ctx.fill();
+
+                summaryCanvasAnimId = requestAnimationFrame(render);
+            }
+
+            if (summaryCanvasAnimId) cancelAnimationFrame(summaryCanvasAnimId);
+            render();
+        }
+
+        // ==================== 3. ESTADO GLOBAL E ARMAZENAMENTO ====================
+        const STORAGE_KEY = 'controle_financeiro_clientes_v1';
         let clients = [];
         let selectedClientId = null;
         let lastGeneratedDataUrl = null;
         let lastGeneratedBlob = null;
 
-
-        // ==================== FIREBASE LOGIN, CADASTRO E CONTROLE DE ADMINISTRADOR ====================
+        // ==================== 4. FIREBASE LOGIN, CADASTRO E CONTROLE DE ADMINISTRADOR ====================
         const FIREBASE_CFG_KEY = 'controle_financeiro_firebase_cfg_v1';
         const ADMIN_EMAIL_KEY = 'controle_financeiro_admin_email_v1';
+
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyCiW5T9NAv3F-4VQqJD-lGHYSFp6HbhKLA",
+            authDomain: "financeiro-crientes.firebaseapp.com",
+            projectId: "financeiro-crientes",
+            storageBucket: "financeiro-crientes.firebasestorage.app",
+            messagingSenderId: "1019430056888",
+            appId: "1:1019430056888:web:43f3b895fc00b4f0b1d54d"
+        };
 
         let fbApp = null;
         let fbAuth = null;
@@ -786,7 +1093,6 @@
             const trimmed = (rawText || '').trim();
             if (!trimmed) return null;
 
-            // Suporta tanto JSON puro quanto "const firebaseConfig = { ... };"
             let objCandidate = trimmed;
             const eqIdx = objCandidate.indexOf('=');
             if (eqIdx !== -1 && (objCandidate.slice(0, eqIdx).includes('firebaseConfig') || objCandidate.trim().startsWith('const') || objCandidate.trim().startsWith('let') || objCandidate.trim().startsWith('var'))) {
@@ -796,7 +1102,6 @@
                 objCandidate = objCandidate.slice(0, -1).trim();
             }
 
-            // Tenta JSON.parse primeiro; se tiver chaves sem aspas (JS object literal), avalia com segurança
             try {
                 return JSON.parse(objCandidate);
             } catch (_) {
@@ -830,7 +1135,7 @@
             localStorage.removeItem(FIREBASE_CFG_KEY);
             localStorage.removeItem(ADMIN_EMAIL_KEY);
             closeFirebaseConfigModal();
-            showToast('Configuração do Firebase removida deste aparelho.', 'info');
+            showToast('Configuração restaurada para o padrão.', 'info');
             initFirebaseAuthGate();
         }
 
@@ -879,7 +1184,6 @@
                     return role;
                 }
 
-                // Se ainda não existe documento para este usuário, verifica se há algum admin cadastrado
                 let assignedRole = 'usuario';
                 if (configuredAdminEmail && userEmail === configuredAdminEmail) {
                     assignedRole = 'admin';
@@ -899,7 +1203,6 @@
 
                 return assignedRole;
             } catch (err) {
-                // Fallback caso as regras do Firestore ainda não permitam leitura da coleção
                 if (configuredAdminEmail && userEmail === configuredAdminEmail) {
                     return 'admin';
                 }
@@ -922,15 +1225,6 @@
             }
         }
 
-        const DEFAULT_FIREBASE_CONFIG = {
-          apiKey: "AIzaSyCiW5T9NAv3F-4VQqJD-lGHYSFp6HbhKLA",
-          authDomain: "financeiro-crientes.firebaseapp.com",
-          projectId: "financeiro-crientes",
-          storageBucket: "financeiro-crientes.firebasestorage.app",
-          messagingSenderId: "1019430056888",
-          appId: "1:1019430056888:web:43f3b895fc00b4f0b1d54d"
-        };
-
         function initFirebaseAuthGate() {
             const gate = document.getElementById('authGateScreen');
             const notCfgBox = document.getElementById('firebaseNotConfiguredBox');
@@ -942,6 +1236,7 @@
                 connBadge.textContent = 'Status: Sem configuração Firebase';
                 gate.classList.remove('hidden');
                 gate.classList.add('flex');
+                startAuthCanvasAnimation();
                 return;
             }
 
@@ -962,6 +1257,7 @@
                 connBadge.textContent = 'Status: Erro na config Firebase';
                 gate.classList.remove('hidden');
                 gate.classList.add('flex');
+                startAuthCanvasAnimation();
             }
         }
 
@@ -990,11 +1286,13 @@
                     gate.classList.remove('flex');
                     loadData();
                     renderClientList();
+                    startSummaryCanvasAnimation();
                     loadClientsFromFirestoreIfAvailable();
                 } else {
                     applyRoleUI(null, 'usuario');
                     gate.classList.remove('hidden');
                     gate.classList.add('flex');
+                    startAuthCanvasAnimation();
                 }
             });
         }
@@ -1042,18 +1340,21 @@
                 await fbAuth.signOut();
                 showToast('Você saiu da conta.', 'info');
             }
+            closeBackupDrawer();
             const gate = document.getElementById('authGateScreen');
             gate.classList.remove('hidden');
             gate.classList.add('flex');
+            startAuthCanvasAnimation();
         }
 
-        // ==================== INICIALIZAÇÃO ====================
+        // ==================== 5. INICIALIZAÇÃO ====================
         window.onload = function () {
-            // Define data padrão de hoje no modal de compra
+            setupDynamicPWAAssets();
+            startAuthCanvasAnimation();
+
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('purchaseDateInput').value = today;
 
-            // Inicia bloqueio de login/cadastro via Firebase
             initFirebaseAuthGate();
         };
 
@@ -1064,7 +1365,6 @@
                 if (raw) {
                     clients = JSON.parse(raw);
                 } else {
-                    // Cliente de exemplo inicial para facilitar o teste imediato
                     const today = new Date();
                     const formatISO = (d) => d.toISOString().split('T')[0];
                     
@@ -1104,7 +1404,6 @@
                 clients = [];
             }
         }
-
 
         // ==================== SINCRONIZAÇÃO DE CLIENTES NO FIRESTORE ====================
         let isSyncingFromCloud = false;
@@ -1177,7 +1476,6 @@
             return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
 
-        // Máscara automática para telefone brasileiro (XX) XXXXX-XXXX
         function maskPhone(input) {
             let v = input.value.replace(/\D/g, '');
             if (v.length > 11) v = v.slice(0, 11);
@@ -1190,7 +1488,6 @@
             }
         }
 
-        // Calcula os totais financeiros de um cliente específico
         function calculateClientTotals(client) {
             let total = 0;
             let paid = 0;
@@ -1204,7 +1501,6 @@
                 });
             });
 
-            // Evita problemas de arredondamento de ponto flutuante
             total = Math.round(total * 100) / 100;
             paid = Math.round(paid * 100) / 100;
             const remaining = Math.max(0, Math.round((total - paid) * 100) / 100);
@@ -1250,7 +1546,6 @@
             const emptyState = document.getElementById('emptyClientsState');
             const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase().trim();
 
-            // Calcula totais globais
             let globalPending = 0;
             let globalPaid = 0;
             clients.forEach(c => {
@@ -1262,7 +1557,6 @@
             document.getElementById('globalPendingAmount').textContent = formatCurrency(globalPending);
             document.getElementById('globalPaidAmount').textContent = formatCurrency(globalPaid);
 
-            // Filtra clientes pela busca
             const filtered = clients.filter(c => 
                 c.name.toLowerCase().includes(searchTerm) || 
                 (c.phone && c.phone.includes(searchTerm))
@@ -1319,7 +1613,6 @@
             const client = clients.find(c => c.id === selectedClientId);
             if (!client) return;
 
-            // Preenche cabeçalho de dados do cliente
             document.getElementById('detailClientName').textContent = client.name;
             document.getElementById('detailClientPhone').textContent = client.phone || 'Telefone não informado';
             document.getElementById('detailClientAddress').textContent = client.address || 'Endereço não informado';
@@ -1332,7 +1625,6 @@
                 notesEl.classList.add('hidden');
             }
 
-            // Atualiza Resumo Financeiro no Topo
             const stats = calculateClientTotals(client);
             document.getElementById('detailTotalAmount').textContent = formatCurrency(stats.total);
             document.getElementById('detailPaidAmount').textContent = formatCurrency(stats.paid);
@@ -1350,7 +1642,6 @@
                 accountBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300';
             }
 
-            // Renderiza compras e parcelas
             const container = document.getElementById('purchasesContainer');
             const emptyState = document.getElementById('emptyPurchasesState');
             container.innerHTML = '';
@@ -1362,7 +1653,6 @@
                 emptyState.classList.add('hidden');
             }
 
-            // Exibe as compras mais recentes primeiro
             const purchasesReversed = [...client.purchases].reverse();
 
             purchasesReversed.forEach(purchase => {
@@ -1373,10 +1663,8 @@
                 const purchaseCard = document.createElement('div');
                 purchaseCard.className = 'bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden';
 
-                // Cabeçalho do Item Comprado
                 let installmentsHTML = '';
                 purchase.installments.forEach(inst => {
-                    // Quando paga, fica apagada/esmaecida conforme solicitado pelo usuário
                     const isPaid = inst.paid;
                     const rowClass = isPaid 
                         ? 'opacity-50 bg-slate-50/80 border-slate-100' 
@@ -1400,7 +1688,6 @@
                                 </p>
                             </div>
 
-                            <!-- Botão Pagar / Pago -->
                             <button onclick="toggleInstallmentPaid('${purchase.id}', '${inst.id}')" class="shrink-0 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-1.5 ${
                                 isPaid 
                                 ? 'bg-emerald-100 text-emerald-800 border border-emerald-200 hover:bg-emerald-200' 
@@ -1511,7 +1798,6 @@
             if (!name || !phone) return;
 
             if (id) {
-                // Atualizar cliente existente
                 const client = clients.find(c => c.id === id);
                 if (client) {
                     client.name = name;
@@ -1524,7 +1810,6 @@
                     showToast('Dados do cliente atualizados!', 'success');
                 }
             } else {
-                // Criar novo cliente
                 const newClient = {
                     id: 'cli_' + Date.now(),
                     name,
@@ -1582,7 +1867,6 @@
             modal.classList.remove('flex');
         }
 
-        // Gera a lista de parcelas com datas mensais e ajuste de centavos na última parcela
         function buildInstallmentsArray(totalAmount, count, firstDueDateISO) {
             const installments = [];
             const baseAmount = Math.floor((totalAmount / count) * 100) / 100;
@@ -1591,9 +1875,7 @@
             const [year, month, day] = firstDueDateISO.split('-').map(Number);
 
             for (let i = 0; i < count; i++) {
-                // Calcula vencimento mês a mês preservando o dia quando possível
                 const dueObj = new Date(year, (month - 1) + i, day);
-                // Se o mês seguinte não tiver o dia (ex: 31 de jan -> fev), ajusta para o último dia do mês
                 if (dueObj.getMonth() !== ((month - 1 + i) % 12 + 12) % 12) {
                     dueObj.setDate(0);
                 }
@@ -1697,7 +1979,6 @@
             const client = clients.find(c => c.id === selectedClientId);
             if (!client) return;
 
-            // Preenche o cartão oculto do extrato antes de capturar o print
             const stats = calculateClientTotals(client);
             const todayStr = formatDateBR(new Date().toISOString().split('T')[0]);
 
@@ -1710,7 +1991,6 @@
             document.getElementById('printPaidVal').textContent = formatCurrency(stats.paid);
             document.getElementById('printRemainingVal').textContent = formatCurrency(stats.remaining);
 
-            // Monta a lista de compras e parcelas no cartão do print
             const printItemsList = document.getElementById('printItemsList');
             printItemsList.innerHTML = '';
 
@@ -1742,7 +2022,6 @@
                 });
             }
 
-            // Abre o modal de pré-visualização com spinner
             const modal = document.getElementById('modalPrintPreview');
             const imgEl = document.getElementById('generatedPrintImage');
             const spinner = document.getElementById('printLoadingSpinner');
@@ -1754,12 +2033,11 @@
             modal.classList.add('flex');
 
             try {
-                // Aguarda um frame para garantir renderização do DOM oculto
                 await new Promise(resolve => setTimeout(resolve, 120));
 
                 const captureEl = document.getElementById('receiptCaptureCard');
                 const canvas = await html2canvas(captureEl, {
-                    scale: 2, // Alta resolução para ficar nítido no WhatsApp
+                    scale: 2,
                     backgroundColor: '#ffffff',
                     useCORS: true
                 });
@@ -1767,7 +2045,6 @@
                 lastGeneratedDataUrl = canvas.toDataURL('image/png');
                 imgEl.src = lastGeneratedDataUrl;
 
-                // Converte para Blob/File para suportar compartilhamento direto de arquivo no celular
                 canvas.toBlob(blob => {
                     lastGeneratedBlob = blob;
                 }, 'image/png');
@@ -1787,7 +2064,6 @@
             modal.classList.remove('flex');
         }
 
-        // Baixa a imagem PNG gerada no dispositivo
         function downloadPrintImage() {
             if (!lastGeneratedDataUrl) return;
             const client = clients.find(c => c.id === selectedClientId);
@@ -1802,7 +2078,6 @@
             showToast('Print salvo na galeria/downloads!', 'success');
         }
 
-        // Compartilha a imagem diretamente via Web Share API (ideal para celulares Android/iPhone)
         async function sharePrintFile() {
             const client = clients.find(c => c.id === selectedClientId);
             if (!client || !lastGeneratedBlob) {
@@ -1827,18 +2102,15 @@
                     }
                 }
             } else {
-                // Fallback para desktop: baixa a imagem automaticamente e avisa
                 downloadPrintImage();
                 showToast('Imagem baixada! Agora clique em "Abrir WhatsApp" e anexe a foto.', 'info');
             }
         }
 
-        // Abre diretamente a conversa no WhatsApp do cliente cadastrado
         function openClientWhatsApp() {
             const client = clients.find(c => c.id === selectedClientId);
             if (!client) return;
 
-            // Limpa o telefone e adiciona DDI 55 (Brasil) se necessário
             let digits = (client.phone || '').replace(/\D/g, '');
             if (digits.length === 10 || digits.length === 11) {
                 digits = '55' + digits;
@@ -1846,7 +2118,6 @@
 
             const stats = calculateClientTotals(client);
             
-            // Monta mensagem resumida para acompanhar o print
             let message = `Olá *${client.name}*, tudo bem? Segue o resumo atualizado das suas compras:\n\n`;
             message += `💰 *Valor Total:* ${formatCurrency(stats.total)}\n`;
             message += `✅ *Total Pago:* ${formatCurrency(stats.paid)}\n`;
@@ -1900,7 +2171,6 @@
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
-
 
         // ==================== GAVETA DE BACKUP (SALVAR / CARREGAR) ====================
         function openBackupDrawer() {
@@ -2011,6 +2281,7 @@
             e.preventDefault();
             deferredInstallPrompt = e;
             document.getElementById('installDrawerHint').classList.remove('hidden');
+            document.getElementById('authInstallPromptBox').classList.remove('hidden');
             if (!isStandaloneMode() && localStorage.getItem('pwa_install_banner_dismissed') !== 'true') {
                 document.getElementById('installAppBanner').classList.remove('hidden');
             }
@@ -2022,12 +2293,18 @@
                 const choiceResult = await deferredInstallPrompt.userChoice;
                 deferredInstallPrompt = null;
                 document.getElementById('installAppBanner').classList.add('hidden');
+                document.getElementById('authInstallPromptBox').classList.add('hidden');
                 if (choiceResult.outcome === 'accepted') {
-                    showToast('Aplicativo instalado na tela inicial e na gaveta de apps!', 'success');
+                    showToast('Aplicativo instalado na tela inicial!', 'success');
                 }
             } else {
                 document.getElementById('installAppBanner').classList.add('hidden');
-                showToast('Use o menu do navegador e toque em "Adicionar à tela inicial".', 'info');
+                const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+                if (isIOS) {
+                    showToast('Toque em Compartilhar (quadrado com seta) e depois em "Adicionar à Tela de Início".', 'info');
+                } else {
+                    showToast('Toque nos 3 pontinhos do Chrome no topo e escolha "Instalar aplicativo" ou "Adicionar à tela inicial".', 'info');
+                }
             }
         }
 
@@ -2039,28 +2316,49 @@
         window.addEventListener('appinstalled', () => {
             document.getElementById('installAppBanner').classList.add('hidden');
             document.getElementById('installDrawerHint').classList.add('hidden');
+            document.getElementById('authInstallPromptBox').classList.add('hidden');
             showToast('Aplicativo instalado com sucesso!', 'success');
         });
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                if ('caches' in window) {
-                    caches.keys().then((keys) => {
-                        keys.forEach((k) => {
-                            if (k !== 'controle-financeiro-pwa-v4') {
-                                caches.delete(k);
-                            }
-                        });
-                    });
-                }
-                navigator.serviceWorker.register('./sw.js?v=4').then((reg) => {
-                    reg.update().catch(() => {});
-                }).catch(() => {});
-                setTimeout(showFirstVisitInstallPromptIfNeeded, 700);
+        // Registra Service Worker (tenta ./sw.js primeiro e usa Blob fallback se estiver em arquivo único)
+        function registerPWAServiceWorker() {
+            if (!('serviceWorker' in navigator)) return;
+
+            const swCode = `
+                const CACHE_NAME = 'controle-financeiro-pwa-v5';
+                self.addEventListener('install', (e) => {
+                    self.skipWaiting();
+                });
+                self.addEventListener('activate', (e) => {
+                    e.waitUntil(
+                        caches.keys().then((keys) =>
+                            Promise.all(keys.map((k) => k !== CACHE_NAME ? caches.delete(k) : null))
+                        )
+                    );
+                    self.clients.claim();
+                });
+                self.addEventListener('fetch', (e) => {
+                    if (e.request.method !== 'GET') return;
+                    e.respondWith(
+                        fetch(e.request).catch(() => caches.match(e.request))
+                    );
+                });
+            `;
+
+            navigator.serviceWorker.register('./sw.js').catch(() => {
+                try {
+                    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(swBlob);
+                    navigator.serviceWorker.register(swUrl).catch(() => {});
+                } catch (_) {}
             });
         }
 
-        // Previne XSS em textos inseridos pelo usuário
+        window.addEventListener('load', () => {
+            registerPWAServiceWorker();
+            setTimeout(showFirstVisitInstallPromptIfNeeded, 700);
+        });
+
         function escapeHTML(str) {
             if (!str) return '';
             return str.replace(/[&<>"']/g, function (m) {
@@ -2073,24 +2371,6 @@
                 }[m];
             });
         }
-
-        // Controle da tela de abertura (splash) azul com ícone grande
-        function hideSplashScreen() {
-            const splash = document.getElementById('appSplashScreen');
-            if (!splash || splash.classList.contains('splash-hide')) return;
-            splash.classList.add('splash-hide');
-            setTimeout(() => {
-                if (splash && splash.parentNode) {
-                    splash.remove();
-                }
-            }, 380);
-        }
-
-        window.addEventListener('load', () => {
-            setTimeout(hideSplashScreen, 750);
-        });
-        setTimeout(hideSplashScreen, 2500);
-
     </script>
 </body>
 </html>
