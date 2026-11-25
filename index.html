@@ -40,12 +40,12 @@
                     },
                     colors: {
                         brand: {
-                            50: 'var(--brand-50, #eff6ff)',
-                            100: 'var(--brand-100, #dbeafe)',
-                            500: 'var(--brand-500, #3b82f6)',
-                            600: 'var(--brand-600, #2563eb)',
-                            700: 'var(--brand-700, #1d4ed8)',
-                            900: 'var(--brand-900, #1e3a8a)',
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
                         },
                         whatsapp: {
                             500: '#25D366',
@@ -58,118 +58,8 @@
     </script>
 
     <style>
-        /* ==================== VARIÁVEIS DE TEMAS ==================== */
-        :root,
-        [data-app-theme="azul"] {
-            --brand-50: #eff6ff;
-            --brand-100: #dbeafe;
-            --brand-500: #3b82f6;
-            --brand-600: #2563eb;
-            --brand-700: #1d4ed8;
-            --brand-900: #1e3a8a;
-            --app-bg: #f1f5f9;
-            --app-surface: #ffffff;
-            --app-surface-alt: #f8fafc;
-            --app-border: #e2e8f0;
-            --app-text: #0f172a;
-            --app-text-muted: #64748b;
-            --meta-theme: #1d4ed8;
+        :root {
             --font-scale: 1;
-        }
-
-        [data-app-theme="esmeralda"] {
-            --brand-50: #ecfdf5;
-            --brand-100: #d1fae5;
-            --brand-500: #10b981;
-            --brand-600: #059669;
-            --brand-700: #047857;
-            --brand-900: #064e3b;
-            --app-bg: #eef7f3;
-            --app-surface: #ffffff;
-            --app-surface-alt: #f4fbf8;
-            --app-border: #cce8dc;
-            --app-text: #06281e;
-            --app-text-muted: #4b6b60;
-            --meta-theme: #047857;
-        }
-
-        [data-app-theme="ambar"] {
-            --brand-50: #fffbeb;
-            --brand-100: #fef3c7;
-            --brand-500: #f59e0b;
-            --brand-600: #d97706;
-            --brand-700: #b45309;
-            --brand-900: #78350f;
-            --app-bg: #faf5eb;
-            --app-surface: #ffffff;
-            --app-surface-alt: #fffcf5;
-            --app-border: #eadcc0;
-            --app-text: #271a06;
-            --app-text-muted: #725d3b;
-            --meta-theme: #b45309;
-        }
-
-        [data-app-theme="noturno"] {
-            --brand-50: #1e293b;
-            --brand-100: #1e3a5f;
-            --brand-500: #38bdf8;
-            --brand-600: #0284c7;
-            --brand-700: #0369a1;
-            --brand-900: #0c4a6e;
-            --app-bg: #0b1120;
-            --app-surface: #111827;
-            --app-surface-alt: #1e293b;
-            --app-border: #283548;
-            --app-text: #f1f5f9;
-            --app-text-muted: #94a3b8;
-            --meta-theme: #0369a1;
-        }
-
-        /* Adapta superfícies claras/escuras do Tailwind ao tema ativo */
-        body {
-            background-color: var(--app-bg) !important;
-            color: var(--app-text) !important;
-        }
-
-        .bg-slate-100 {
-            background-color: var(--app-bg) !important;
-        }
-
-        .bg-white,
-        .bg-white\/95 {
-            background-color: var(--app-surface) !important;
-        }
-
-        .bg-slate-50,
-        .bg-slate-50\/80,
-        .bg-slate-50\/90 {
-            background-color: var(--app-surface-alt) !important;
-        }
-
-        .border-slate-200,
-        .border-slate-200\/90,
-        .border-slate-200\/80,
-        .border-slate-100 {
-            border-color: var(--app-border) !important;
-        }
-
-        .text-slate-900,
-        .text-slate-800 {
-            color: var(--app-text) !important;
-        }
-
-        .text-slate-600,
-        .text-slate-500,
-        .text-slate-400 {
-            color: var(--app-text-muted) !important;
-        }
-
-        [data-app-theme="noturno"] input,
-        [data-app-theme="noturno"] select,
-        [data-app-theme="noturno"] textarea {
-            background-color: var(--app-surface-alt) !important;
-            color: var(--app-text) !important;
-            border-color: var(--app-border) !important;
         }
 
         /* Zoom escalonado nas áreas de leitura e uso do app */
@@ -188,9 +78,9 @@
             flex: 1;
             padding: 7px 6px;
             border-radius: 10px;
-            border: 1px solid var(--app-border);
-            background-color: var(--app-surface);
-            color: var(--app-text);
+            border: 1px solid #e2e8f0;
+            background-color: #ffffff;
+            color: #0f172a;
             font-weight: 800;
             font-size: 12px;
             cursor: pointer;
@@ -202,30 +92,9 @@
         }
 
         .font-step-btn.is-active {
-            background-color: var(--brand-600);
-            border-color: var(--brand-600);
+            background-color: #2563eb;
+            border-color: #2563eb;
             color: #ffffff;
-        }
-
-        /* Bolinhas de tema dentro da gaveta */
-        .theme-dot-btn {
-            width: 34px;
-            height: 34px;
-            border-radius: 9999px;
-            border: 2px solid var(--app-border);
-            cursor: pointer;
-            position: relative;
-            transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
-        }
-
-        .theme-dot-btn:active {
-            transform: scale(0.92);
-        }
-
-        .theme-dot-btn.is-active {
-            border-color: var(--app-text);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.28);
-            transform: scale(1.08);
         }
 
         /* Gaveta lateral da esquerda para a direita */
@@ -345,7 +214,7 @@
         </div>
     </header>
 
-    <!-- ==================== GAVETA LATERAL (ESQUERDA PARA DIREITA): BACKUP, TEMAS & LETRA ==================== -->
+    <!-- ==================== GAVETA LATERAL (ESQUERDA PARA DIREITA): BACKUP & LETRA ==================== -->
     <div id="backupDrawer" class="fixed inset-0 z-50 hidden">
         <div onclick="closeBackupDrawer()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
         <aside id="backupDrawerPanel" class="relative w-72 max-w-[82vw] h-full bg-white text-slate-900 shadow-2xl flex flex-col justify-between z-10 overflow-y-auto">
@@ -383,20 +252,6 @@
                             <span>Carregar Backup</span>
                         </button>
                         <input type="file" id="backupFileInput" accept=".json,application/json" onchange="handleBackupFileSelected(event)" class="hidden">
-                    </div>
-
-                    <!-- Seção de Temas discretos na gaveta -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2.5 shadow-xs">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Temas</span>
-                            <span id="activeThemeLabel" class="text-[11px] font-bold text-slate-500">Azul</span>
-                        </div>
-                        <div class="flex items-center justify-between gap-2 pt-0.5" role="group" aria-label="Temas de cores">
-                            <button type="button" data-theme-option="azul" onclick="selectAppTheme('azul')" title="Tema Azul" aria-label="Tema Azul" class="theme-dot-btn is-active" style="background-color: #1d4ed8;"></button>
-                            <button type="button" data-theme-option="esmeralda" onclick="selectAppTheme('esmeralda')" title="Tema Esmeralda" aria-label="Tema Esmeralda" class="theme-dot-btn" style="background-color: #047857;"></button>
-                            <button type="button" data-theme-option="ambar" onclick="selectAppTheme('ambar')" title="Tema Âmbar" aria-label="Tema Âmbar" class="theme-dot-btn" style="background-color: #b45309;"></button>
-                            <button type="button" data-theme-option="noturno" onclick="selectAppTheme('noturno')" title="Tema Noturno" aria-label="Tema Noturno" class="theme-dot-btn" style="background-color: #0f172a;"></button>
-                        </div>
                     </div>
 
                     <!-- Seção de Tamanho da Letra / Zoom na gaveta -->
@@ -848,15 +703,7 @@
     <script>
         // Chaves de armazenamento no localStorage
         const STORAGE_KEY = 'controle_financeiro_clientes_v1';
-        const THEME_STORAGE_KEY = 'controle_financeiro_tema_v1';
         const FONT_STORAGE_KEY = 'controle_financeiro_font_scale_v1';
-
-        const APP_THEMES = {
-            azul: { label: 'Azul', meta: '#1d4ed8' },
-            esmeralda: { label: 'Esmeralda', meta: '#047857' },
-            ambar: { label: 'Âmbar', meta: '#b45309' },
-            noturno: { label: 'Noturno', meta: '#0369a1' }
-        };
 
         const FONT_SCALES = [0.92, 1, 1.12, 1.25];
 
@@ -884,45 +731,14 @@
             applyFontScale(chosen);
         }
 
-        function applySavedTheme(themeName) {
-            const key = APP_THEMES[themeName] ? themeName : 'azul';
-            document.documentElement.setAttribute('data-app-theme', key);
-
-            const metaEl = document.querySelector('meta[name="theme-color"]');
-            if (metaEl) {
-                metaEl.setAttribute('content', APP_THEMES[key].meta);
-            }
-
-            const labelEl = document.getElementById('activeThemeLabel');
-            if (labelEl) {
-                labelEl.textContent = APP_THEMES[key].label;
-            }
-
-            document.querySelectorAll('.theme-dot-btn[data-theme-option]').forEach((btn) => {
-                btn.classList.toggle('is-active', btn.dataset.themeOption === key);
-            });
-        }
-
-        function selectAppTheme(themeName) {
-            const key = APP_THEMES[themeName] ? themeName : 'azul';
-            try {
-                localStorage.setItem(THEME_STORAGE_KEY, key);
-            } catch (_) {}
-            applySavedTheme(key);
-        }
-
-        // Aplica tema e tamanho de letra salvos o mais cedo possível na abertura
-        (function initThemeAndFontImmediate() {
-            let savedTheme = 'azul';
+        // Aplica tamanho de letra salvo o mais cedo possível na abertura
+        (function initFontImmediate() {
             let savedFont = 1;
             try {
-                savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'azul';
                 savedFont = Number(localStorage.getItem(FONT_STORAGE_KEY) || '1');
             } catch (_) {
-                savedTheme = 'azul';
                 savedFont = 1;
             }
-            applySavedTheme(savedTheme);
             applyFontScale(savedFont);
         })();
 
