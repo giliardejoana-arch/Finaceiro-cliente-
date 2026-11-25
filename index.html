@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Controle Financeiro de Clientes</title>
-    
-    <!-- PWA Meta Tags (Manifest e Ícones serão injetados dinamicamente via Canvas + Blob para funcionar em qualquer servidor/arquivo único) -->
-    <link id="dynamicManifestLink" rel="manifest" href="./manifest.json">
-    <link id="dynamicFaviconLink" rel="icon" type="image/png" sizes="192x192" href="">
-    <link id="dynamicAppleIconLink" rel="apple-touch-icon" sizes="192x192" href="">
+    <!-- PWA Manifest & Ícones -->
+    <link rel="manifest" href="./manifest.json?v=4">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png?v=4">
+    <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png?v=4">
     <meta name="theme-color" content="#1d4ed8">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Controle Fin.">
 
+    
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -40,12 +40,12 @@
                     },
                     colors: {
                         brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            900: '#1e3a8a',
+                            50: 'var(--brand-50, #eff6ff)',
+                            100: 'var(--brand-100, #dbeafe)',
+                            500: 'var(--brand-500, #3b82f6)',
+                            600: 'var(--brand-600, #2563eb)',
+                            700: 'var(--brand-700, #1d4ed8)',
+                            900: 'var(--brand-900, #1e3a8a)',
                         },
                         whatsapp: {
                             500: '#25D366',
@@ -58,6 +58,176 @@
     </script>
 
     <style>
+        /* ==================== VARIÁVEIS DE TEMAS ==================== */
+        :root,
+        [data-app-theme="azul"] {
+            --brand-50: #eff6ff;
+            --brand-100: #dbeafe;
+            --brand-500: #3b82f6;
+            --brand-600: #2563eb;
+            --brand-700: #1d4ed8;
+            --brand-900: #1e3a8a;
+            --app-bg: #f1f5f9;
+            --app-surface: #ffffff;
+            --app-surface-alt: #f8fafc;
+            --app-border: #e2e8f0;
+            --app-text: #0f172a;
+            --app-text-muted: #64748b;
+            --meta-theme: #1d4ed8;
+            --font-scale: 1;
+        }
+
+        [data-app-theme="esmeralda"] {
+            --brand-50: #ecfdf5;
+            --brand-100: #d1fae5;
+            --brand-500: #10b981;
+            --brand-600: #059669;
+            --brand-700: #047857;
+            --brand-900: #064e3b;
+            --app-bg: #eef7f3;
+            --app-surface: #ffffff;
+            --app-surface-alt: #f4fbf8;
+            --app-border: #cce8dc;
+            --app-text: #06281e;
+            --app-text-muted: #4b6b60;
+            --meta-theme: #047857;
+        }
+
+        [data-app-theme="ambar"] {
+            --brand-50: #fffbeb;
+            --brand-100: #fef3c7;
+            --brand-500: #f59e0b;
+            --brand-600: #d97706;
+            --brand-700: #b45309;
+            --brand-900: #78350f;
+            --app-bg: #faf5eb;
+            --app-surface: #ffffff;
+            --app-surface-alt: #fffcf5;
+            --app-border: #eadcc0;
+            --app-text: #271a06;
+            --app-text-muted: #725d3b;
+            --meta-theme: #b45309;
+        }
+
+        [data-app-theme="noturno"] {
+            --brand-50: #1e293b;
+            --brand-100: #1e3a5f;
+            --brand-500: #38bdf8;
+            --brand-600: #0284c7;
+            --brand-700: #0369a1;
+            --brand-900: #0c4a6e;
+            --app-bg: #0b1120;
+            --app-surface: #111827;
+            --app-surface-alt: #1e293b;
+            --app-border: #283548;
+            --app-text: #f1f5f9;
+            --app-text-muted: #94a3b8;
+            --meta-theme: #0369a1;
+        }
+
+        /* Adapta superfícies claras/escuras do Tailwind ao tema ativo */
+        body {
+            background-color: var(--app-bg) !important;
+            color: var(--app-text) !important;
+        }
+
+        .bg-slate-100 {
+            background-color: var(--app-bg) !important;
+        }
+
+        .bg-white,
+        .bg-white\/95 {
+            background-color: var(--app-surface) !important;
+        }
+
+        .bg-slate-50,
+        .bg-slate-50\/80,
+        .bg-slate-50\/90 {
+            background-color: var(--app-surface-alt) !important;
+        }
+
+        .border-slate-200,
+        .border-slate-200\/90,
+        .border-slate-200\/80,
+        .border-slate-100 {
+            border-color: var(--app-border) !important;
+        }
+
+        .text-slate-900,
+        .text-slate-800 {
+            color: var(--app-text) !important;
+        }
+
+        .text-slate-600,
+        .text-slate-500,
+        .text-slate-400 {
+            color: var(--app-text-muted) !important;
+        }
+
+        [data-app-theme="noturno"] input,
+        [data-app-theme="noturno"] select,
+        [data-app-theme="noturno"] textarea {
+            background-color: var(--app-surface-alt) !important;
+            color: var(--app-text) !important;
+            border-color: var(--app-border) !important;
+        }
+
+        /* Zoom escalonado nas áreas de leitura e uso do app */
+        #viewHome,
+        #viewClientDetail,
+        #authGateScreen .relative.z-10,
+        #modalClient > div,
+        #modalPurchase > div,
+        #modalConfirm > div,
+        header .max-w-3xl,
+        #backupDrawerPanel {
+            zoom: var(--font-scale, 1);
+        }
+
+        .font-step-btn {
+            flex: 1;
+            padding: 7px 6px;
+            border-radius: 10px;
+            border: 1px solid var(--app-border);
+            background-color: var(--app-surface);
+            color: var(--app-text);
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .font-step-btn:active {
+            transform: scale(0.95);
+        }
+
+        .font-step-btn.is-active {
+            background-color: var(--brand-600);
+            border-color: var(--brand-600);
+            color: #ffffff;
+        }
+
+        /* Bolinhas de tema dentro da gaveta */
+        .theme-dot-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 9999px;
+            border: 2px solid var(--app-border);
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+        }
+
+        .theme-dot-btn:active {
+            transform: scale(0.92);
+        }
+
+        .theme-dot-btn.is-active {
+            border-color: var(--app-text);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.28);
+            transform: scale(1.08);
+        }
+
         /* Gaveta lateral da esquerda para a direita */
         #backupDrawerPanel {
             transform: translateX(-100%);
@@ -96,27 +266,22 @@
 </head>
 <body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col selection:bg-brand-600 selection:text-white">
 
-    <!-- ==================== TELA DE LOGIN / CADASTRO COM CANVAS ANIMADO ==================== -->
+    <!-- ==================== TELA DE LOGIN / CADASTRO ==================== -->
     <div id="authGateScreen" class="fixed inset-0 z-50 bg-slate-100 overflow-y-auto flex items-center justify-center p-4">
-        <!-- Canvas animado de fundo (partículas financeiras suaves conectadas e cifrões flutuantes) -->
-        <canvas id="authBgCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
-
+        <canvas id="authBgCanvas" class="fixed inset-0 w-full h-full pointer-events-none"></canvas>
         <div class="relative z-10 w-full max-w-md bg-white/95 backdrop-blur-xs rounded-2xl shadow-xl border border-slate-200 overflow-hidden fade-in my-auto">
-            <!-- Topo com Canvas Sutil e Ícone Gerado -->
-            <div class="relative bg-brand-700 text-white p-5 text-center overflow-hidden">
-                <img id="authHeaderIconImg" src="" alt="Ícone Controle Financeiro" class="w-16 h-16 rounded-2xl mx-auto mb-3 shadow-md border border-white/25 bg-brand-600">
+            <!-- Topo -->
+            <div class="bg-brand-700 text-white p-5 text-center">
+                <img id="authHeaderIcon" src="./icons/icon-192.png?v=4" alt="Ícone Controle Financeiro" class="w-16 h-16 rounded-2xl mx-auto mb-3 shadow-md border border-white/20">
                 <h1 class="text-xl font-extrabold tracking-tight">Controle Financeiro</h1>
-                <p id="authStatusSubtitle" class="text-xs text-brand-100 mt-1">Acesso seguro com login e senha via Firebase</p>
+                <p id="authStatusSubtitle" class="text-xs text-brand-100 mt-1">Acesso seguro ao painel de clientes</p>
             </div>
 
             <div class="p-5 space-y-4">
-                <!-- Alerta quando o Firebase ainda não foi configurado -->
-                <div id="firebaseNotConfiguredBox" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-900 space-y-2">
-                    <p class="font-bold">Firebase ainda não configurado neste dispositivo</p>
-                    <p>Cole o objeto <code class="bg-amber-100 px-1 py-0.5 rounded font-mono">firebaseConfig</code> do seu projeto Firebase para ativar o login, cadastro e o cargo de administrador.</p>
-                    <button type="button" onclick="openFirebaseConfigModal()" class="w-full py-2.5 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition">
-                        Configurar Firebase Agora
-                    </button>
+                <!-- Alerta oculto caso haja erro interno de inicialização -->
+                <div id="firebaseNotConfiguredBox" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-900 space-y-1">
+                    <p class="font-bold">Serviço temporariamente indisponível</p>
+                    <p>Verifique sua conexão com a internet e tente novamente.</p>
                 </div>
 
                 <!-- Abas Entrar / Cadastrar -->
@@ -142,76 +307,10 @@
                     </button>
                 </form>
 
-                <!-- Botão discreto de instalação também disponível na tela inicial -->
-                <div id="authInstallPromptBox" class="hidden pt-1">
-                    <button type="button" onclick="installPWAApp()" class="w-full py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 font-bold text-xs transition flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        <span>Instalar Aplicativo no Celular</span>
-                    </button>
-                </div>
-
-                <!-- Ações auxiliares: Configurar/Trocar Firebase -->
-                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span id="firebaseConnectionBadge" class="text-slate-500 font-medium">Status: Aguardando Firebase</span>
-                    <button type="button" onclick="openFirebaseConfigModal()" class="text-brand-700 hover:underline font-bold">
-                        Configurar Firebase
-                    </button>
+                <div class="pt-2 border-t border-slate-100 text-center text-[11px] text-slate-400">
+                    <span>Ambiente protegido • Dados sincronizados</span>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- ==================== MODAL CONFIGURAÇÃO FIREBASE (SALVO LOCALMENTE NO DISPOSITIVO) ==================== -->
-    <div id="modalFirebaseConfig" class="fixed inset-0 z-[60] bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden fade-in max-h-[92vh] flex flex-col">
-            <div class="px-5 py-4 bg-brand-700 text-white flex items-center justify-between shrink-0">
-                <div>
-                    <h3 class="text-base font-extrabold">Configurar Firebase</h3>
-                    <p class="text-[11px] text-brand-100">Fica salvo apenas neste aparelho/navegador</p>
-                </div>
-                <button type="button" onclick="closeFirebaseConfigModal()" class="p-1.5 rounded-lg hover:bg-brand-600 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <form id="formFirebaseConfig" onsubmit="saveFirebaseConfig(event)" class="p-5 space-y-3.5 overflow-y-auto">
-                <div>
-                    <label for="firebaseConfigJsonInput" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                        Cole aqui o firebaseConfig do Console Firebase
-                    </label>
-                    <textarea id="firebaseConfigJsonInput" rows="7" required placeholder='{
-  "apiKey": "AIza...",
-  "authDomain": "seu-projeto.firebaseapp.com",
-  "projectId": "seu-projeto",
-  "storageBucket": "seu-projeto.appspot.com",
-  "messagingSenderId": "123456789",
-  "appId": "1:123456789:web:abcdef"
-}' class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"></textarea>
-                </div>
-
-                <div>
-                    <label for="adminEmailConfigInput" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                        E-mail do Administrador (Opcional - se vazio, o 1º usuário cadastrado vira admin no Firestore)
-                    </label>
-                    <input type="email" id="adminEmailConfigInput" placeholder="admin@seusite.com" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
-                </div>
-
-                <div class="flex gap-2.5 pt-2">
-                    <button type="button" onclick="clearFirebaseConfig()" class="py-3 px-3.5 rounded-xl border border-red-200 text-red-700 hover:bg-red-50 font-bold text-xs transition">
-                        Limpar Config
-                    </button>
-                    <button type="button" onclick="closeFirebaseConfigModal()" class="flex-1 py-3 px-4 rounded-xl border border-slate-300 text-slate-700 font-bold text-sm hover:bg-slate-50 transition">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="flex-1 py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-sm transition">
-                        Salvar e Conectar
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -226,7 +325,7 @@
                     </svg>
                 </button>
 
-                <!-- Botão Três Barrinhas (Menu Gaveta Backup) -->
+                <!-- Botão Três Barrinhas (Menu Gaveta Backup) no lugar do cifrão -->
                 <button id="btnMenuDrawer" onclick="openBackupDrawer()" class="bg-white/15 hover:bg-white/25 active:scale-95 p-2.5 rounded-xl shrink-0 transition flex items-center justify-center" aria-label="Abrir menu de backup">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -246,10 +345,10 @@
         </div>
     </header>
 
-    <!-- ==================== GAVETA LATERAL (ESQUERDA PARA DIREITA): BACKUP ==================== -->
+    <!-- ==================== GAVETA LATERAL (ESQUERDA PARA DIREITA): BACKUP, TEMAS & LETRA ==================== -->
     <div id="backupDrawer" class="fixed inset-0 z-50 hidden">
         <div onclick="closeBackupDrawer()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
-        <aside id="backupDrawerPanel" class="relative w-72 max-w-[82vw] h-full bg-white text-slate-900 shadow-2xl flex flex-col justify-between z-10">
+        <aside id="backupDrawerPanel" class="relative w-72 max-w-[82vw] h-full bg-white text-slate-900 shadow-2xl flex flex-col justify-between z-10 overflow-y-auto">
             <div>
                 <div class="bg-brand-700 text-white px-5 py-4 flex items-center justify-between">
                     <div>
@@ -264,7 +363,7 @@
                 </div>
 
                 <!-- Caixazinha com as opções Salvar Backup e Carregar Backup -->
-                <div class="p-4">
+                <div class="p-4 space-y-4">
                     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-2.5 space-y-2 shadow-xs">
                         <button onclick="saveBackupFile()" class="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl bg-white hover:bg-brand-50 active:scale-[0.99] border border-slate-200 text-left font-bold text-slate-800 transition shadow-2xs">
                             <span class="w-9 h-9 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center shrink-0">
@@ -285,30 +384,45 @@
                         </button>
                         <input type="file" id="backupFileInput" accept=".json,application/json" onchange="handleBackupFileSelected(event)" class="hidden">
                     </div>
+
+                    <!-- Seção de Temas discretos na gaveta -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2.5 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Temas</span>
+                            <span id="activeThemeLabel" class="text-[11px] font-bold text-slate-500">Azul</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-2 pt-0.5" role="group" aria-label="Temas de cores">
+                            <button type="button" data-theme-option="azul" onclick="selectAppTheme('azul')" title="Tema Azul" aria-label="Tema Azul" class="theme-dot-btn is-active" style="background-color: #1d4ed8;"></button>
+                            <button type="button" data-theme-option="esmeralda" onclick="selectAppTheme('esmeralda')" title="Tema Esmeralda" aria-label="Tema Esmeralda" class="theme-dot-btn" style="background-color: #047857;"></button>
+                            <button type="button" data-theme-option="ambar" onclick="selectAppTheme('ambar')" title="Tema Âmbar" aria-label="Tema Âmbar" class="theme-dot-btn" style="background-color: #b45309;"></button>
+                            <button type="button" data-theme-option="noturno" onclick="selectAppTheme('noturno')" title="Tema Noturno" aria-label="Tema Noturno" class="theme-dot-btn" style="background-color: #0f172a;"></button>
+                        </div>
+                    </div>
+
+                    <!-- Seção de Tamanho da Letra / Zoom na gaveta -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2.5 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Tamanho da Letra</span>
+                            <span id="activeFontLabel" class="text-[11px] font-bold text-slate-500">100%</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-1.5" role="group" aria-label="Ajustar tamanho da letra">
+                            <button type="button" data-font-option="0.92" onclick="selectFontScale(0.92)" class="font-step-btn" title="Letra menor">A-</button>
+                            <button type="button" data-font-option="1" onclick="selectFontScale(1)" class="font-step-btn is-active" title="Tamanho padrão">A</button>
+                            <button type="button" data-font-option="1.12" onclick="selectFontScale(1.12)" class="font-step-btn" title="Letra maior">A+</button>
+                            <button type="button" data-font-option="1.25" onclick="selectFontScale(1.25)" class="font-step-btn" title="Letra bem grande">A++</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="p-4 border-t border-slate-200 text-xs text-slate-500 space-y-2.5">
                 <div id="drawerUserInfo" class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-700">
-                    <p class="font-bold truncate" id="drawerUserEmail">Não autenticado</p>
-                    <p class="text-[11px] mt-0.5">Perfil: <span id="drawerUserRole" class="font-extrabold text-brand-700">Aguardando</span></p>
+                    <p class="font-bold truncate" id="drawerUserEmail">Conectado</p>
+                    <p class="text-[11px] mt-0.5 text-slate-500">Conta: <span id="drawerUserRole" class="font-bold text-slate-700">Ativa</span></p>
                 </div>
-                <p id="installDrawerHint">
-                    <button onclick="installPWAApp()" class="w-full py-2.5 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm transition flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        <span>Instalar Aplicativo</span>
-                    </button>
-                </p>
-                <div class="flex gap-2">
-                    <button type="button" onclick="closeBackupDrawer(); openFirebaseConfigModal();" class="flex-1 py-2 px-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs transition">
-                        Firebase
-                    </button>
-                    <button type="button" onclick="logoutFirebaseUser()" class="flex-1 py-2 px-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition">
-                        Sair
-                    </button>
-                </div>
+                <button type="button" onclick="closeBackupDrawer(); logoutFirebaseUser();" class="w-full py-2.5 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition">
+                    Sair da Conta
+                </button>
             </div>
         </aside>
     </div>
@@ -316,10 +430,10 @@
     <!-- Banner de Instalação na Primeira Abertura no Celular -->
     <div id="installAppBanner" class="hidden fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto bg-slate-900 text-white rounded-2xl p-4 shadow-2xl border border-slate-700 fade-in">
         <div class="flex items-center gap-3">
-            <img id="bannerInstallIconImg" src="" alt="Ícone do App" class="w-12 h-12 rounded-xl shrink-0 border border-white/15 bg-brand-600">
+            <img src="./icons/icon-192.png?v=4" alt="Ícone do App" class="w-12 h-12 rounded-xl shrink-0 border border-white/15">
             <div class="min-w-0 flex-1">
                 <p class="text-sm font-extrabold truncate">Instalar Controle Financeiro</p>
-                <p id="installBannerDesc" class="text-xs text-slate-300 leading-snug mt-0.5">Adicione à tela inicial e abra como aplicativo no seu celular.</p>
+                <p id="installBannerDesc" class="text-xs text-slate-300 leading-snug mt-0.5">Adicione à tela inicial e à gaveta de apps do seu celular.</p>
             </div>
         </div>
         <div class="mt-3 flex gap-2.5">
@@ -334,15 +448,15 @@
         <!-- TELA 1: LISTA DE CLIENTES -->
         <section id="viewHome" class="fade-in space-y-5">
             
-            <!-- Resumo Geral da Carteira com Canvas Animado Sutil de Ondas/Partículas -->
-            <div class="relative overflow-hidden rounded-2xl bg-white p-3.5 sm:p-4 shadow-sm border border-slate-200/80">
-                <canvas id="summaryCardsCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
-                <div class="relative z-10 grid grid-cols-2 gap-3">
-                    <div class="bg-white/85 backdrop-blur-xs p-3.5 rounded-xl border border-amber-100/90 shadow-2xs">
+            <!-- Resumo Geral da Carteira com Animação Canvas -->
+            <div class="relative rounded-2xl overflow-hidden shadow-sm border border-slate-200/90 bg-white">
+                <canvas id="summaryCardsCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+                <div class="relative z-10 grid grid-cols-2 divide-x divide-slate-200/80">
+                    <div class="p-4">
                         <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 block">Total a Receber</span>
                         <span id="globalPendingAmount" class="text-xl sm:text-2xl font-extrabold text-amber-600 mt-1 block">R$ 0,00</span>
                     </div>
-                    <div class="bg-white/85 backdrop-blur-xs p-3.5 rounded-xl border border-emerald-100/90 shadow-2xs">
+                    <div class="p-4">
                         <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 block">Total Recebido</span>
                         <span id="globalPaidAmount" class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-1 block">R$ 0,00</span>
                     </div>
@@ -491,6 +605,7 @@
     </main>
 
     <!-- ==================== ÁREA OCULTA PARA RENDERIZAÇÃO DO PRINT (EXTRATO VISUAL) ==================== -->
+    <!-- Este bloco é capturado pelo html2canvas para gerar uma imagem PNG limpa e profissional -->
     <div style="position: fixed; left: -9999px; top: 0; z-index: -1;">
         <div id="receiptCaptureCard" class="w-[420px] bg-white p-6 text-slate-900 font-sans border-2 border-slate-200">
             <!-- Cabeçalho do Comprovante -->
@@ -731,336 +846,96 @@
 
     <!-- ==================== LÓGICA JAVASCRIPT ==================== -->
     <script>
-        // ==================== 1. GERAÇÃO DE ÍCONES E MANIFEST PWA VIA CANVAS ====================
-        // Gera ícones PNG reais (192x192 e 512x512) em memória via Canvas para que o navegador
-        // sempre encontre os ícones válidos e libere a instalação como aplicativo no celular.
-        function generateAppIconDataUrl(size) {
-            const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext('2d');
-
-            // Fundo azul arredondado
-            const radius = size * 0.22;
-            ctx.fillStyle = '#1d4ed8';
-            ctx.beginPath();
-            ctx.moveTo(radius, 0);
-            ctx.lineTo(size - radius, 0);
-            ctx.quadraticCurveTo(size, 0, size, radius);
-            ctx.lineTo(size, size - radius);
-            ctx.quadraticCurveTo(size, size, size - radius, size);
-            ctx.lineTo(radius, size);
-            ctx.quadraticCurveTo(0, size, 0, size - radius);
-            ctx.lineTo(0, radius);
-            ctx.quadraticCurveTo(0, 0, radius, 0);
-            ctx.closePath();
-            ctx.fill();
-
-            // Gradiente sutil de brilho no topo
-            const grad = ctx.createLinearGradient(0, 0, size, size);
-            grad.addColorStop(0, 'rgba(255, 255, 255, 0.16)');
-            grad.addColorStop(1, 'rgba(15, 23, 42, 0.22)');
-            ctx.fillStyle = grad;
-            ctx.fill();
-
-            // Anel interno
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-            ctx.lineWidth = size * 0.03;
-            ctx.beginPath();
-            ctx.arc(size * 0.48, size * 0.48, size * 0.31, 0, Math.PI * 2);
-            ctx.stroke();
-
-            // Cifrão branco central
-            ctx.fillStyle = '#ffffff';
-            ctx.font = `800 ${Math.round(size * 0.46)}px Inter, Arial, sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('$', size * 0.48, size * 0.50);
-
-            // Selo verde de verificado no canto inferior direito
-            const badgeR = size * 0.16;
-            const badgeX = size * 0.74;
-            const badgeY = size * 0.74;
-
-            ctx.fillStyle = '#10b981';
-            ctx.beginPath();
-            ctx.arc(badgeX, badgeY, badgeR, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = size * 0.025;
-            ctx.stroke();
-
-            // Check branco dentro do selo verde
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = size * 0.036;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.beginPath();
-            ctx.moveTo(badgeX - badgeR * 0.42, badgeY + badgeR * 0.02);
-            ctx.lineTo(badgeX - badgeR * 0.10, badgeY + badgeR * 0.34);
-            ctx.lineTo(badgeX + badgeR * 0.46, badgeY - badgeR * 0.30);
-            ctx.stroke();
-
-            return canvas.toDataURL('image/png');
-        }
-
-        function setupDynamicPWAAssets() {
-            try {
-                const icon192 = generateAppIconDataUrl(192);
-                const icon512 = generateAppIconDataUrl(512);
-
-                // Atualiza favicons e imagens na interface
-                const favLink = document.getElementById('dynamicFaviconLink');
-                const appleLink = document.getElementById('dynamicAppleIconLink');
-                const authIconImg = document.getElementById('authHeaderIconImg');
-                const bannerIconImg = document.getElementById('bannerInstallIconImg');
-
-                if (favLink) favLink.href = icon192;
-                if (appleLink) appleLink.href = icon192;
-                if (authIconImg) authIconImg.src = icon192;
-                if (bannerIconImg) bannerIconImg.src = icon192;
-
-                // Resolve URL base atual para start_url e scope funcionarem no GitHub Pages ou domínio próprio
-                const currentUrl = new URL('./', window.location.href).href;
-
-                const manifestObj = {
-                    name: 'Controle Financeiro de Clientes',
-                    short_name: 'Controle Fin.',
-                    description: 'Gestão financeira de clientes, compras parceladas e extratos para WhatsApp.',
-                    start_url: window.location.href.split('#')[0],
-                    scope: currentUrl,
-                    display: 'standalone',
-                    orientation: 'portrait',
-                    background_color: '#f1f5f9',
-                    theme_color: '#1d4ed8',
-                    icons: [
-                        {
-                            src: icon192,
-                            sizes: '192x192',
-                            type: 'image/png',
-                            purpose: 'any'
-                        },
-                        {
-                            src: icon192,
-                            sizes: '192x192',
-                            type: 'image/png',
-                            purpose: 'maskable'
-                        },
-                        {
-                            src: icon512,
-                            sizes: '512x512',
-                            type: 'image/png',
-                            purpose: 'any'
-                        },
-                        {
-                            src: icon512,
-                            sizes: '512x512',
-                            type: 'image/png',
-                            purpose: 'maskable'
-                        }
-                    ]
-                };
-
-                const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
-                const manifestBlobUrl = URL.createObjectURL(manifestBlob);
-                const manifestLink = document.getElementById('dynamicManifestLink');
-                if (manifestLink) {
-                    manifestLink.href = manifestBlobUrl;
-                }
-            } catch (e) {
-                console.warn('Fallback de manifest:', e);
-            }
-        }
-
-        // ==================== 2. ANIMAÇÕES EM HTML5 CANVAS ====================
-        let authCanvasAnimId = null;
-        let summaryCanvasAnimId = null;
-
-        // Animação 1: Partículas financeiras conectadas e cifrões suaves na tela de login
-        function startAuthCanvasAnimation() {
-            const canvas = document.getElementById('authBgCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            let width = 0;
-            let height = 0;
-            let particles = [];
-            const symbols = ['$', 'R$', '%', '+'];
-
-            function resize() {
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                width = window.innerWidth;
-                height = window.innerHeight;
-                canvas.width = width * dpr;
-                canvas.height = height * dpr;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            }
-
-            function initParticles() {
-                const count = Math.min(34, Math.max(16, Math.floor((width * height) / 26000)));
-                particles = [];
-                for (let i = 0; i < count; i++) {
-                    const isGreen = i % 3 === 0;
-                    particles.push({
-                        x: Math.random() * width,
-                        y: Math.random() * height,
-                        vx: (Math.random() - 0.5) * 0.45,
-                        vy: (Math.random() - 0.5) * 0.45 - 0.12,
-                        radius: 2.2 + Math.random() * 2.5,
-                        color: isGreen ? 'rgba(16, 185, 129, 0.35)' : 'rgba(37, 99, 235, 0.30)',
-                        lineColor: isGreen ? 'rgba(16, 185, 129, 0.10)' : 'rgba(37, 99, 235, 0.10)',
-                        symbol: i % 4 === 0 ? symbols[i % symbols.length] : null,
-                        phase: Math.random() * Math.PI * 2
-                    });
-                }
-            }
-
-            resize();
-            initParticles();
-            window.addEventListener('resize', () => {
-                resize();
-                initParticles();
-            });
-
-            function draw() {
-                const gate = document.getElementById('authGateScreen');
-                if (gate && gate.classList.contains('hidden')) {
-                    authCanvasAnimId = null;
-                    return;
-                }
-
-                ctx.clearRect(0, 0, width, height);
-
-                // Atualiza e desenha conexões
-                for (let i = 0; i < particles.length; i++) {
-                    const p = particles[i];
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.phase += 0.02;
-
-                    if (p.x < -20) p.x = width + 20;
-                    if (p.x > width + 20) p.x = -20;
-                    if (p.y < -20) p.y = height + 20;
-                    if (p.y > height + 20) p.y = -20;
-
-                    // Linhas entre partículas próximas
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const p2 = particles[j];
-                        const dx = p.x - p2.x;
-                        const dy = p.y - p2.y;
-                        const dist = Math.hypot(dx, dy);
-                        if (dist < 135) {
-                            ctx.strokeStyle = p.lineColor;
-                            ctx.lineWidth = 1;
-                            ctx.beginPath();
-                            ctx.moveTo(p.x, p.y);
-                            ctx.lineTo(p2.x, p2.y);
-                            ctx.stroke();
-                        }
-                    }
-
-                    // Ponto ou símbolo financeiro flutuante
-                    if (p.symbol) {
-                        ctx.fillStyle = p.color;
-                        ctx.font = '700 13px Inter, sans-serif';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(p.symbol, p.x, p.y + Math.sin(p.phase) * 3);
-                    } else {
-                        ctx.fillStyle = p.color;
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-                }
-
-                authCanvasAnimId = requestAnimationFrame(draw);
-            }
-
-            if (authCanvasAnimId) cancelAnimationFrame(authCanvasAnimId);
-            draw();
-        }
-
-        // Animação 2: Ondas suaves e partículas decorativas no card de resumo do painel
-        function startSummaryCanvasAnimation() {
-            const canvas = document.getElementById('summaryCardsCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            let w = 0;
-            let h = 0;
-            let tick = 0;
-
-            function resize() {
-                const parent = canvas.parentElement;
-                if (!parent) return;
-                const rect = parent.getBoundingClientRect();
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                w = rect.width;
-                h = rect.height;
-                canvas.width = w * dpr;
-                canvas.height = h * dpr;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            }
-
-            resize();
-            window.addEventListener('resize', resize);
-
-            function render() {
-                if (w === 0 || h === 0) resize();
-                ctx.clearRect(0, 0, w, h);
-                tick += 0.025;
-
-                // Onda azul sutil
-                ctx.beginPath();
-                ctx.moveTo(0, h);
-                for (let x = 0; x <= w; x += 12) {
-                    const y = h * 0.58 + Math.sin(x * 0.015 + tick) * 10;
-                    ctx.lineTo(x, y);
-                }
-                ctx.lineTo(w, h);
-                ctx.closePath();
-                ctx.fillStyle = 'rgba(37, 99, 235, 0.06)';
-                ctx.fill();
-
-                // Onda esmeralda sutil
-                ctx.beginPath();
-                ctx.moveTo(0, h);
-                for (let x = 0; x <= w; x += 12) {
-                    const y = h * 0.68 + Math.cos(x * 0.018 - tick * 0.9) * 8;
-                    ctx.lineTo(x, y);
-                }
-                ctx.lineTo(w, h);
-                ctx.closePath();
-                ctx.fillStyle = 'rgba(16, 185, 129, 0.06)';
-                ctx.fill();
-
-                summaryCanvasAnimId = requestAnimationFrame(render);
-            }
-
-            if (summaryCanvasAnimId) cancelAnimationFrame(summaryCanvasAnimId);
-            render();
-        }
-
-        // ==================== 3. ESTADO GLOBAL E ARMAZENAMENTO ====================
+        // Chaves de armazenamento no localStorage
         const STORAGE_KEY = 'controle_financeiro_clientes_v1';
+        const THEME_STORAGE_KEY = 'controle_financeiro_tema_v1';
+        const FONT_STORAGE_KEY = 'controle_financeiro_font_scale_v1';
+
+        const APP_THEMES = {
+            azul: { label: 'Azul', meta: '#1d4ed8' },
+            esmeralda: { label: 'Esmeralda', meta: '#047857' },
+            ambar: { label: 'Âmbar', meta: '#b45309' },
+            noturno: { label: 'Noturno', meta: '#0369a1' }
+        };
+
+        const FONT_SCALES = [0.92, 1, 1.12, 1.25];
+
+        function applyFontScale(scaleVal) {
+            const num = Number(scaleVal);
+            const chosen = FONT_SCALES.includes(num) ? num : 1;
+            document.documentElement.style.setProperty('--font-scale', String(chosen));
+
+            const labelEl = document.getElementById('activeFontLabel');
+            if (labelEl) {
+                labelEl.textContent = `${Math.round(chosen * 100)}%`;
+            }
+
+            document.querySelectorAll('.font-step-btn[data-font-option]').forEach((btn) => {
+                btn.classList.toggle('is-active', Number(btn.dataset.fontOption) === chosen);
+            });
+        }
+
+        function selectFontScale(scaleVal) {
+            const num = Number(scaleVal);
+            const chosen = FONT_SCALES.includes(num) ? num : 1;
+            try {
+                localStorage.setItem(FONT_STORAGE_KEY, String(chosen));
+            } catch (_) {}
+            applyFontScale(chosen);
+        }
+
+        function applySavedTheme(themeName) {
+            const key = APP_THEMES[themeName] ? themeName : 'azul';
+            document.documentElement.setAttribute('data-app-theme', key);
+
+            const metaEl = document.querySelector('meta[name="theme-color"]');
+            if (metaEl) {
+                metaEl.setAttribute('content', APP_THEMES[key].meta);
+            }
+
+            const labelEl = document.getElementById('activeThemeLabel');
+            if (labelEl) {
+                labelEl.textContent = APP_THEMES[key].label;
+            }
+
+            document.querySelectorAll('.theme-dot-btn[data-theme-option]').forEach((btn) => {
+                btn.classList.toggle('is-active', btn.dataset.themeOption === key);
+            });
+        }
+
+        function selectAppTheme(themeName) {
+            const key = APP_THEMES[themeName] ? themeName : 'azul';
+            try {
+                localStorage.setItem(THEME_STORAGE_KEY, key);
+            } catch (_) {}
+            applySavedTheme(key);
+        }
+
+        // Aplica tema e tamanho de letra salvos o mais cedo possível na abertura
+        (function initThemeAndFontImmediate() {
+            let savedTheme = 'azul';
+            let savedFont = 1;
+            try {
+                savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'azul';
+                savedFont = Number(localStorage.getItem(FONT_STORAGE_KEY) || '1');
+            } catch (_) {
+                savedTheme = 'azul';
+                savedFont = 1;
+            }
+            applySavedTheme(savedTheme);
+            applyFontScale(savedFont);
+        })();
+
+        // Estado global da aplicação
         let clients = [];
         let selectedClientId = null;
         let lastGeneratedDataUrl = null;
         let lastGeneratedBlob = null;
 
-        // ==================== 4. FIREBASE LOGIN, CADASTRO E CONTROLE DE ADMINISTRADOR ====================
+
+        // ==================== FIREBASE LOGIN, CADASTRO E CONTROLE DE ADMINISTRADOR ====================
         const FIREBASE_CFG_KEY = 'controle_financeiro_firebase_cfg_v1';
         const ADMIN_EMAIL_KEY = 'controle_financeiro_admin_email_v1';
-
-        const DEFAULT_FIREBASE_CONFIG = {
-            apiKey: "AIzaSyCiW5T9NAv3F-4VQqJD-lGHYSFp6HbhKLA",
-            authDomain: "financeiro-crientes.firebaseapp.com",
-            projectId: "financeiro-crientes",
-            storageBucket: "financeiro-crientes.firebasestorage.app",
-            messagingSenderId: "1019430056888",
-            appId: "1:1019430056888:web:43f3b895fc00b4f0b1d54d"
-        };
 
         let fbApp = null;
         let fbAuth = null;
@@ -1093,6 +968,7 @@
             const trimmed = (rawText || '').trim();
             if (!trimmed) return null;
 
+            // Suporta tanto JSON puro quanto "const firebaseConfig = { ... };"
             let objCandidate = trimmed;
             const eqIdx = objCandidate.indexOf('=');
             if (eqIdx !== -1 && (objCandidate.slice(0, eqIdx).includes('firebaseConfig') || objCandidate.trim().startsWith('const') || objCandidate.trim().startsWith('let') || objCandidate.trim().startsWith('var'))) {
@@ -1102,6 +978,7 @@
                 objCandidate = objCandidate.slice(0, -1).trim();
             }
 
+            // Tenta JSON.parse primeiro; se tiver chaves sem aspas (JS object literal), avalia com segurança
             try {
                 return JSON.parse(objCandidate);
             } catch (_) {
@@ -1135,7 +1012,7 @@
             localStorage.removeItem(FIREBASE_CFG_KEY);
             localStorage.removeItem(ADMIN_EMAIL_KEY);
             closeFirebaseConfigModal();
-            showToast('Configuração restaurada para o padrão.', 'info');
+            showToast('Configuração do Firebase removida deste aparelho.', 'info');
             initFirebaseAuthGate();
         }
 
@@ -1184,6 +1061,7 @@
                     return role;
                 }
 
+                // Se ainda não existe documento para este usuário, verifica se há algum admin cadastrado
                 let assignedRole = 'usuario';
                 if (configuredAdminEmail && userEmail === configuredAdminEmail) {
                     assignedRole = 'admin';
@@ -1203,6 +1081,7 @@
 
                 return assignedRole;
             } catch (err) {
+                // Fallback caso as regras do Firestore ainda não permitam leitura da coleção
                 if (configuredAdminEmail && userEmail === configuredAdminEmail) {
                     return 'admin';
                 }
@@ -1218,25 +1097,31 @@
             const roleEl = document.getElementById('drawerUserRole');
             if (emailEl) emailEl.textContent = user ? (user.email || 'Usuário autenticado') : 'Não autenticado';
             if (roleEl) {
-                roleEl.textContent = currentUserRole === 'admin' ? 'Administrador' : 'Usuário';
-                roleEl.className = currentUserRole === 'admin'
-                    ? 'font-extrabold text-emerald-700'
-                    : 'font-extrabold text-slate-700';
+                roleEl.textContent = 'Ativa';
+                roleEl.className = 'font-bold text-slate-700';
             }
         }
+
+        const DEFAULT_FIREBASE_CONFIG = {
+          apiKey: "AIzaSyCiW5T9NAv3F-4VQqJD-lGHYSFp6HbhKLA",
+          authDomain: "financeiro-crientes.firebaseapp.com",
+          projectId: "financeiro-crientes",
+          storageBucket: "financeiro-crientes.firebasestorage.app",
+          messagingSenderId: "1019430056888",
+          appId: "1:1019430056888:web:43f3b895fc00b4f0b1d54d"
+        };
 
         function initFirebaseAuthGate() {
             const gate = document.getElementById('authGateScreen');
             const notCfgBox = document.getElementById('firebaseNotConfiguredBox');
-            const connBadge = document.getElementById('firebaseConnectionBadge');
+            
             const rawCfg = localStorage.getItem(FIREBASE_CFG_KEY) || JSON.stringify(DEFAULT_FIREBASE_CONFIG);
 
             if (!rawCfg || typeof firebase === 'undefined') {
                 notCfgBox.classList.remove('hidden');
-                connBadge.textContent = 'Status: Sem configuração Firebase';
+                
                 gate.classList.remove('hidden');
                 gate.classList.add('flex');
-                startAuthCanvasAnimation();
                 return;
             }
 
@@ -1254,10 +1139,9 @@
                 bindAuthStateListener();
             } catch (err) {
                 notCfgBox.classList.remove('hidden');
-                connBadge.textContent = 'Status: Erro na config Firebase';
+                
                 gate.classList.remove('hidden');
                 gate.classList.add('flex');
-                startAuthCanvasAnimation();
             }
         }
 
@@ -1272,7 +1156,7 @@
             }
 
             document.getElementById('firebaseNotConfiguredBox').classList.add('hidden');
-            document.getElementById('firebaseConnectionBadge').textContent = 'Status: Conectado ao Firebase';
+            
 
             if (authListenerAttached) return;
             authListenerAttached = true;
@@ -1286,13 +1170,11 @@
                     gate.classList.remove('flex');
                     loadData();
                     renderClientList();
-                    startSummaryCanvasAnimation();
                     loadClientsFromFirestoreIfAvailable();
                 } else {
                     applyRoleUI(null, 'usuario');
                     gate.classList.remove('hidden');
                     gate.classList.add('flex');
-                    startAuthCanvasAnimation();
                 }
             });
         }
@@ -1300,8 +1182,8 @@
         async function handleAuthSubmit(event) {
             event.preventDefault();
             if (!fbAuth) {
-                showToast('Configure o Firebase primeiro.', 'error');
-                openFirebaseConfigModal();
+                showToast('Serviço indisponível no momento.', 'error');
+                
                 return;
             }
 
@@ -1319,7 +1201,7 @@
                     showToast('Login realizado com sucesso!', 'success');
                 } else {
                     await fbAuth.createUserWithEmailAndPassword(email, password);
-                    showToast('Conta cadastrada no Firebase!', 'success');
+                    showToast('Conta cadastrada com sucesso!', 'success');
                 }
             } catch (err) {
                 let msg = 'Falha na autenticação. Verifique e-mail e senha.';
@@ -1340,21 +1222,18 @@
                 await fbAuth.signOut();
                 showToast('Você saiu da conta.', 'info');
             }
-            closeBackupDrawer();
             const gate = document.getElementById('authGateScreen');
             gate.classList.remove('hidden');
             gate.classList.add('flex');
-            startAuthCanvasAnimation();
         }
 
-        // ==================== 5. INICIALIZAÇÃO ====================
+        // ==================== INICIALIZAÇÃO ====================
         window.onload = function () {
-            setupDynamicPWAAssets();
-            startAuthCanvasAnimation();
-
+            // Define data padrão de hoje no modal de compra
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('purchaseDateInput').value = today;
 
+            // Inicia bloqueio de login/cadastro via Firebase
             initFirebaseAuthGate();
         };
 
@@ -1365,6 +1244,7 @@
                 if (raw) {
                     clients = JSON.parse(raw);
                 } else {
+                    // Cliente de exemplo inicial para facilitar o teste imediato
                     const today = new Date();
                     const formatISO = (d) => d.toISOString().split('T')[0];
                     
@@ -1404,6 +1284,7 @@
                 clients = [];
             }
         }
+
 
         // ==================== SINCRONIZAÇÃO DE CLIENTES NO FIRESTORE ====================
         let isSyncingFromCloud = false;
@@ -1476,6 +1357,7 @@
             return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
 
+        // Máscara automática para telefone brasileiro (XX) XXXXX-XXXX
         function maskPhone(input) {
             let v = input.value.replace(/\D/g, '');
             if (v.length > 11) v = v.slice(0, 11);
@@ -1488,6 +1370,7 @@
             }
         }
 
+        // Calcula os totais financeiros de um cliente específico
         function calculateClientTotals(client) {
             let total = 0;
             let paid = 0;
@@ -1501,6 +1384,7 @@
                 });
             });
 
+            // Evita problemas de arredondamento de ponto flutuante
             total = Math.round(total * 100) / 100;
             paid = Math.round(paid * 100) / 100;
             const remaining = Math.max(0, Math.round((total - paid) * 100) / 100);
@@ -1546,6 +1430,7 @@
             const emptyState = document.getElementById('emptyClientsState');
             const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase().trim();
 
+            // Calcula totais globais
             let globalPending = 0;
             let globalPaid = 0;
             clients.forEach(c => {
@@ -1557,6 +1442,7 @@
             document.getElementById('globalPendingAmount').textContent = formatCurrency(globalPending);
             document.getElementById('globalPaidAmount').textContent = formatCurrency(globalPaid);
 
+            // Filtra clientes pela busca
             const filtered = clients.filter(c => 
                 c.name.toLowerCase().includes(searchTerm) || 
                 (c.phone && c.phone.includes(searchTerm))
@@ -1613,6 +1499,7 @@
             const client = clients.find(c => c.id === selectedClientId);
             if (!client) return;
 
+            // Preenche cabeçalho de dados do cliente
             document.getElementById('detailClientName').textContent = client.name;
             document.getElementById('detailClientPhone').textContent = client.phone || 'Telefone não informado';
             document.getElementById('detailClientAddress').textContent = client.address || 'Endereço não informado';
@@ -1625,6 +1512,7 @@
                 notesEl.classList.add('hidden');
             }
 
+            // Atualiza Resumo Financeiro no Topo
             const stats = calculateClientTotals(client);
             document.getElementById('detailTotalAmount').textContent = formatCurrency(stats.total);
             document.getElementById('detailPaidAmount').textContent = formatCurrency(stats.paid);
@@ -1642,6 +1530,7 @@
                 accountBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300';
             }
 
+            // Renderiza compras e parcelas
             const container = document.getElementById('purchasesContainer');
             const emptyState = document.getElementById('emptyPurchasesState');
             container.innerHTML = '';
@@ -1653,6 +1542,7 @@
                 emptyState.classList.add('hidden');
             }
 
+            // Exibe as compras mais recentes primeiro
             const purchasesReversed = [...client.purchases].reverse();
 
             purchasesReversed.forEach(purchase => {
@@ -1663,8 +1553,10 @@
                 const purchaseCard = document.createElement('div');
                 purchaseCard.className = 'bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden';
 
+                // Cabeçalho do Item Comprado
                 let installmentsHTML = '';
                 purchase.installments.forEach(inst => {
+                    // Quando paga, fica apagada/esmaecida conforme solicitado pelo usuário
                     const isPaid = inst.paid;
                     const rowClass = isPaid 
                         ? 'opacity-50 bg-slate-50/80 border-slate-100' 
@@ -1688,6 +1580,7 @@
                                 </p>
                             </div>
 
+                            <!-- Botão Pagar / Pago -->
                             <button onclick="toggleInstallmentPaid('${purchase.id}', '${inst.id}')" class="shrink-0 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-1.5 ${
                                 isPaid 
                                 ? 'bg-emerald-100 text-emerald-800 border border-emerald-200 hover:bg-emerald-200' 
@@ -1798,6 +1691,7 @@
             if (!name || !phone) return;
 
             if (id) {
+                // Atualizar cliente existente
                 const client = clients.find(c => c.id === id);
                 if (client) {
                     client.name = name;
@@ -1810,6 +1704,7 @@
                     showToast('Dados do cliente atualizados!', 'success');
                 }
             } else {
+                // Criar novo cliente
                 const newClient = {
                     id: 'cli_' + Date.now(),
                     name,
@@ -1867,6 +1762,7 @@
             modal.classList.remove('flex');
         }
 
+        // Gera a lista de parcelas com datas mensais e ajuste de centavos na última parcela
         function buildInstallmentsArray(totalAmount, count, firstDueDateISO) {
             const installments = [];
             const baseAmount = Math.floor((totalAmount / count) * 100) / 100;
@@ -1875,7 +1771,9 @@
             const [year, month, day] = firstDueDateISO.split('-').map(Number);
 
             for (let i = 0; i < count; i++) {
+                // Calcula vencimento mês a mês preservando o dia quando possível
                 const dueObj = new Date(year, (month - 1) + i, day);
+                // Se o mês seguinte não tiver o dia (ex: 31 de jan -> fev), ajusta para o último dia do mês
                 if (dueObj.getMonth() !== ((month - 1 + i) % 12 + 12) % 12) {
                     dueObj.setDate(0);
                 }
@@ -1979,6 +1877,7 @@
             const client = clients.find(c => c.id === selectedClientId);
             if (!client) return;
 
+            // Preenche o cartão oculto do extrato antes de capturar o print
             const stats = calculateClientTotals(client);
             const todayStr = formatDateBR(new Date().toISOString().split('T')[0]);
 
@@ -1991,6 +1890,7 @@
             document.getElementById('printPaidVal').textContent = formatCurrency(stats.paid);
             document.getElementById('printRemainingVal').textContent = formatCurrency(stats.remaining);
 
+            // Monta a lista de compras e parcelas no cartão do print
             const printItemsList = document.getElementById('printItemsList');
             printItemsList.innerHTML = '';
 
@@ -2022,6 +1922,7 @@
                 });
             }
 
+            // Abre o modal de pré-visualização com spinner
             const modal = document.getElementById('modalPrintPreview');
             const imgEl = document.getElementById('generatedPrintImage');
             const spinner = document.getElementById('printLoadingSpinner');
@@ -2033,11 +1934,12 @@
             modal.classList.add('flex');
 
             try {
+                // Aguarda um frame para garantir renderização do DOM oculto
                 await new Promise(resolve => setTimeout(resolve, 120));
 
                 const captureEl = document.getElementById('receiptCaptureCard');
                 const canvas = await html2canvas(captureEl, {
-                    scale: 2,
+                    scale: 2, // Alta resolução para ficar nítido no WhatsApp
                     backgroundColor: '#ffffff',
                     useCORS: true
                 });
@@ -2045,6 +1947,7 @@
                 lastGeneratedDataUrl = canvas.toDataURL('image/png');
                 imgEl.src = lastGeneratedDataUrl;
 
+                // Converte para Blob/File para suportar compartilhamento direto de arquivo no celular
                 canvas.toBlob(blob => {
                     lastGeneratedBlob = blob;
                 }, 'image/png');
@@ -2064,6 +1967,7 @@
             modal.classList.remove('flex');
         }
 
+        // Baixa a imagem PNG gerada no dispositivo
         function downloadPrintImage() {
             if (!lastGeneratedDataUrl) return;
             const client = clients.find(c => c.id === selectedClientId);
@@ -2078,6 +1982,7 @@
             showToast('Print salvo na galeria/downloads!', 'success');
         }
 
+        // Compartilha a imagem diretamente via Web Share API (ideal para celulares Android/iPhone)
         async function sharePrintFile() {
             const client = clients.find(c => c.id === selectedClientId);
             if (!client || !lastGeneratedBlob) {
@@ -2102,15 +2007,18 @@
                     }
                 }
             } else {
+                // Fallback para desktop: baixa a imagem automaticamente e avisa
                 downloadPrintImage();
                 showToast('Imagem baixada! Agora clique em "Abrir WhatsApp" e anexe a foto.', 'info');
             }
         }
 
+        // Abre diretamente a conversa no WhatsApp do cliente cadastrado
         function openClientWhatsApp() {
             const client = clients.find(c => c.id === selectedClientId);
             if (!client) return;
 
+            // Limpa o telefone e adiciona DDI 55 (Brasil) se necessário
             let digits = (client.phone || '').replace(/\D/g, '');
             if (digits.length === 10 || digits.length === 11) {
                 digits = '55' + digits;
@@ -2118,6 +2026,7 @@
 
             const stats = calculateClientTotals(client);
             
+            // Monta mensagem resumida para acompanhar o print
             let message = `Olá *${client.name}*, tudo bem? Segue o resumo atualizado das suas compras:\n\n`;
             message += `💰 *Valor Total:* ${formatCurrency(stats.total)}\n`;
             message += `✅ *Total Pago:* ${formatCurrency(stats.paid)}\n`;
@@ -2171,6 +2080,7 @@
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
+
 
         // ==================== GAVETA DE BACKUP (SALVAR / CARREGAR) ====================
         function openBackupDrawer() {
@@ -2261,8 +2171,8 @@
 
         function showFirstVisitInstallPromptIfNeeded() {
             if (isStandaloneMode()) return;
-            const dismissed = localStorage.getItem('pwa_install_banner_dismissed');
-            if (dismissed === 'true') return;
+            const alreadyPrompted = localStorage.getItem('pwa_install_banner_dismissed');
+            if (alreadyPrompted === 'true') return;
 
             const banner = document.getElementById('installAppBanner');
             const desc = document.getElementById('installBannerDesc');
@@ -2273,6 +2183,7 @@
             }
 
             if (deferredInstallPrompt || isMobileDevice()) {
+                localStorage.setItem('pwa_install_banner_dismissed', 'true');
                 banner.classList.remove('hidden');
             }
         }
@@ -2280,9 +2191,8 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredInstallPrompt = e;
-            document.getElementById('installDrawerHint').classList.remove('hidden');
-            document.getElementById('authInstallPromptBox').classList.remove('hidden');
             if (!isStandaloneMode() && localStorage.getItem('pwa_install_banner_dismissed') !== 'true') {
+                localStorage.setItem('pwa_install_banner_dismissed', 'true');
                 document.getElementById('installAppBanner').classList.remove('hidden');
             }
         });
@@ -2293,18 +2203,12 @@
                 const choiceResult = await deferredInstallPrompt.userChoice;
                 deferredInstallPrompt = null;
                 document.getElementById('installAppBanner').classList.add('hidden');
-                document.getElementById('authInstallPromptBox').classList.add('hidden');
                 if (choiceResult.outcome === 'accepted') {
-                    showToast('Aplicativo instalado na tela inicial!', 'success');
+                    showToast('Aplicativo instalado na tela inicial e na gaveta de apps!', 'success');
                 }
             } else {
                 document.getElementById('installAppBanner').classList.add('hidden');
-                const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-                if (isIOS) {
-                    showToast('Toque em Compartilhar (quadrado com seta) e depois em "Adicionar à Tela de Início".', 'info');
-                } else {
-                    showToast('Toque nos 3 pontinhos do Chrome no topo e escolha "Instalar aplicativo" ou "Adicionar à tela inicial".', 'info');
-                }
+                showToast('Use o menu do navegador e toque em "Adicionar à tela inicial".', 'info');
             }
         }
 
@@ -2315,50 +2219,29 @@
 
         window.addEventListener('appinstalled', () => {
             document.getElementById('installAppBanner').classList.add('hidden');
-            document.getElementById('installDrawerHint').classList.add('hidden');
-            document.getElementById('authInstallPromptBox').classList.add('hidden');
+            
             showToast('Aplicativo instalado com sucesso!', 'success');
         });
 
-        // Registra Service Worker (tenta ./sw.js primeiro e usa Blob fallback se estiver em arquivo único)
-        function registerPWAServiceWorker() {
-            if (!('serviceWorker' in navigator)) return;
-
-            const swCode = `
-                const CACHE_NAME = 'controle-financeiro-pwa-v5';
-                self.addEventListener('install', (e) => {
-                    self.skipWaiting();
-                });
-                self.addEventListener('activate', (e) => {
-                    e.waitUntil(
-                        caches.keys().then((keys) =>
-                            Promise.all(keys.map((k) => k !== CACHE_NAME ? caches.delete(k) : null))
-                        )
-                    );
-                    self.clients.claim();
-                });
-                self.addEventListener('fetch', (e) => {
-                    if (e.request.method !== 'GET') return;
-                    e.respondWith(
-                        fetch(e.request).catch(() => caches.match(e.request))
-                    );
-                });
-            `;
-
-            navigator.serviceWorker.register('./sw.js').catch(() => {
-                try {
-                    const swBlob = new Blob([swCode], { type: 'application/javascript' });
-                    const swUrl = URL.createObjectURL(swBlob);
-                    navigator.serviceWorker.register(swUrl).catch(() => {});
-                } catch (_) {}
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                if ('caches' in window) {
+                    caches.keys().then((keys) => {
+                        keys.forEach((k) => {
+                            if (k !== 'controle-financeiro-pwa-v4') {
+                                caches.delete(k);
+                            }
+                        });
+                    });
+                }
+                navigator.serviceWorker.register('./sw.js?v=4').then((reg) => {
+                    reg.update().catch(() => {});
+                }).catch(() => {});
+                setTimeout(showFirstVisitInstallPromptIfNeeded, 700);
             });
         }
 
-        window.addEventListener('load', () => {
-            registerPWAServiceWorker();
-            setTimeout(showFirstVisitInstallPromptIfNeeded, 700);
-        });
-
+        // Previne XSS em textos inseridos pelo usuário
         function escapeHTML(str) {
             if (!str) return '';
             return str.replace(/[&<>"']/g, function (m) {
@@ -2371,6 +2254,177 @@
                 }[m];
             });
         }
+
+        // ==================== ANIMAÇÕES HTML5 CANVAS & ÍCONE DINÂMICO ====================
+        function generateCanvasAppIcon(size) {
+            const c = document.createElement('canvas');
+            c.width = size;
+            c.height = size;
+            const ctx = c.getContext('2d');
+
+            const grad = ctx.createLinearGradient(0, 0, size, size);
+            grad.addColorStop(0, '#2563eb');
+            grad.addColorStop(1, '#1e3a8a');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, size, size);
+
+            ctx.strokeStyle = 'rgba(147, 197, 253, 0.75)';
+            ctx.lineWidth = size * 0.04;
+            ctx.beginPath();
+            ctx.arc(size * 0.5, size * 0.5, size * 0.34, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `800 ${Math.round(size * 0.44)}px Inter, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('$', size * 0.5, size * 0.52);
+
+            const bx = size * 0.73;
+            const by = size * 0.73;
+            const br = size * 0.16;
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.arc(bx, by, br, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = size * 0.032;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(bx - br * 0.42, by + br * 0.04);
+            ctx.lineTo(bx - br * 0.1, by + br * 0.36);
+            ctx.lineTo(bx + br * 0.46, by - br * 0.32);
+            ctx.stroke();
+
+            return c.toDataURL('image/png');
+        }
+
+        function initDynamicCanvasAnimations() {
+            // Garante ícones válidos mesmo se carregado isoladamente
+            const icon192 = generateCanvasAppIcon(192);
+            document.querySelectorAll('img[src*="icon-192.png"]').forEach(img => {
+                img.onerror = () => { img.src = icon192; };
+            });
+
+            // 1. Canvas animado de partículas financeiras na tela de login
+            const authCanvas = document.getElementById('authBgCanvas');
+            if (authCanvas) {
+                const ctx = authCanvas.getContext('2d');
+                let particles = [];
+                const resizeAuth = () => {
+                    authCanvas.width = window.innerWidth;
+                    authCanvas.height = window.innerHeight;
+                };
+                resizeAuth();
+                window.addEventListener('resize', resizeAuth);
+
+                for (let i = 0; i < 26; i++) {
+                    particles.push({
+                        x: Math.random() * authCanvas.width,
+                        y: Math.random() * authCanvas.height,
+                        r: 2 + Math.random() * 3,
+                        vx: (Math.random() - 0.5) * 0.55,
+                        vy: (Math.random() - 0.5) * 0.55,
+                        symbol: i % 4 === 0 ? '$' : null
+                    });
+                }
+
+                function drawAuthCanvas() {
+                    const gate = document.getElementById('authGateScreen');
+                    if (gate && !gate.classList.contains('hidden')) {
+                        ctx.clearRect(0, 0, authCanvas.width, authCanvas.height);
+                        for (let i = 0; i < particles.length; i++) {
+                            const p = particles[i];
+                            p.x += p.vx;
+                            p.y += p.vy;
+                            if (p.x < 0 || p.x > authCanvas.width) p.vx *= -1;
+                            if (p.y < 0 || p.y > authCanvas.height) p.vy *= -1;
+
+                            for (let j = i + 1; j < particles.length; j++) {
+                                const q = particles[j];
+                                const dx = p.x - q.x;
+                                const dy = p.y - q.y;
+                                const dist = Math.hypot(dx, dy);
+                                if (dist < 130) {
+                                    ctx.strokeStyle = `rgba(37, 99, 235, ${0.14 * (1 - dist / 130)})`;
+                                    ctx.lineWidth = 1;
+                                    ctx.beginPath();
+                                    ctx.moveTo(p.x, p.y);
+                                    ctx.lineTo(q.x, q.y);
+                                    ctx.stroke();
+                                }
+                            }
+
+                            if (p.symbol) {
+                                ctx.fillStyle = 'rgba(37, 99, 235, 0.22)';
+                                ctx.font = '700 13px Inter, sans-serif';
+                                ctx.fillText(p.symbol, p.x - 4, p.y + 4);
+                            } else {
+                                ctx.fillStyle = 'rgba(59, 130, 246, 0.25)';
+                                ctx.beginPath();
+                                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                                ctx.fill();
+                            }
+                        }
+                    }
+                    requestAnimationFrame(drawAuthCanvas);
+                }
+                drawAuthCanvas();
+            }
+
+            // 2. Canvas animado de ondas suaves no card de resumo da carteira
+            const sumCanvas = document.getElementById('summaryCardsCanvas');
+            if (sumCanvas) {
+                const sctx = sumCanvas.getContext('2d');
+                let phase = 0;
+                const resizeSum = () => {
+                    const rect = sumCanvas.parentElement.getBoundingClientRect();
+                    sumCanvas.width = rect.width || 360;
+                    sumCanvas.height = rect.height || 90;
+                };
+                resizeSum();
+                window.addEventListener('resize', resizeSum);
+
+                function drawSummaryWave() {
+                    const home = document.getElementById('viewHome');
+                    if (home && !home.classList.contains('hidden')) {
+                        const w = sumCanvas.width;
+                        const h = sumCanvas.height;
+                        sctx.clearRect(0, 0, w, h);
+                        phase += 0.025;
+
+                        sctx.fillStyle = 'rgba(37, 99, 235, 0.045)';
+                        sctx.beginPath();
+                        sctx.moveTo(0, h);
+                        for (let x = 0; x <= w; x += 12) {
+                            const y = h * 0.68 + Math.sin(x * 0.02 + phase) * 6;
+                            sctx.lineTo(x, y);
+                        }
+                        sctx.lineTo(w, h);
+                        sctx.closePath();
+                        sctx.fill();
+
+                        sctx.fillStyle = 'rgba(16, 185, 129, 0.045)';
+                        sctx.beginPath();
+                        sctx.moveTo(0, h);
+                        for (let x = 0; x <= w; x += 12) {
+                            const y = h * 0.74 + Math.cos(x * 0.018 - phase * 0.85) * 5;
+                            sctx.lineTo(x, y);
+                        }
+                        sctx.lineTo(w, h);
+                        sctx.closePath();
+                        sctx.fill();
+                    }
+                    requestAnimationFrame(drawSummaryWave);
+                }
+                drawSummaryWave();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', initDynamicCanvasAnimations);
+
     </script>
 </body>
 </html>
