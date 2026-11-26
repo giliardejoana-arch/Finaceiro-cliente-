@@ -2,19 +2,19 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Controle Financeiro de Clientes</title>
     <!-- PWA Manifest & Ícones -->
-    <link rel="manifest" href="./manifest.json?v=5">
-    <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png?v=5">
-    <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png?v=5">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
     <meta name="theme-color" content="#1d4ed8">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Controle Fin.">
 
-    
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -131,6 +131,44 @@
             background: #cbd5e1;
             border-radius: 9999px;
         }
+
+        /* Suporte às bordas e cantos arredondados do iPhone (Notch / Dynamic Island / Barra inferior) */
+        header {
+            padding-top: env(safe-area-inset-top, 0px);
+        }
+
+        header > div,
+        #backupDrawerPanel > div:first-child,
+        #backupDrawerPanel > div:last-child {
+            padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+            padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+        }
+
+        #backupDrawerPanel {
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        main {
+            padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+            padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+            padding-bottom: calc(8.5rem + env(safe-area-inset-bottom, 0px));
+        }
+
+        /* Garante que o conteúdo da ficha do cliente nunca fique sob o botão fixo do WhatsApp */
+        #viewClientDetail {
+            padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px));
+        }
+
+        .fixed.bottom-0 {
+            padding-bottom: calc(0.875rem + env(safe-area-inset-bottom, 0px));
+            padding-left: calc(0.875rem + env(safe-area-inset-left, 0px));
+            padding-right: calc(0.875rem + env(safe-area-inset-right, 0px));
+        }
+
+        button, a, input, select, textarea {
+            touch-action: manipulation;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col selection:bg-brand-600 selection:text-white">
@@ -141,16 +179,20 @@
         <div class="relative z-10 w-full max-w-md bg-white/95 backdrop-blur-xs rounded-2xl shadow-xl border border-slate-200 overflow-hidden fade-in my-auto">
             <!-- Topo -->
             <div class="bg-brand-700 text-white p-5 text-center">
-                <img id="authHeaderIcon" src="./icons/icon-192.png?v=4" alt="Ícone Controle Financeiro" class="w-16 h-16 rounded-2xl mx-auto mb-3 shadow-md border border-white/20">
+                <img id="authHeaderIcon" src="./icons/icon-192.png" alt="Ícone Controle Financeiro" class="w-16 h-16 rounded-2xl mx-auto mb-3 shadow-md border border-white/20">
                 <h1 class="text-xl font-extrabold tracking-tight">Controle Financeiro</h1>
                 <p id="authStatusSubtitle" class="text-xs text-brand-100 mt-1">Acesso seguro ao painel de clientes</p>
             </div>
 
             <div class="p-5 space-y-4">
-                <!-- Alerta oculto caso haja erro interno de inicialização -->
-                <div id="firebaseNotConfiguredBox" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-900 space-y-1">
-                    <p class="font-bold">Serviço temporariamente indisponível</p>
-                    <p>Verifique sua conexão com a internet e tente novamente.</p>
+                <!-- Fallback caso a configuração remota/local não seja encontrada -->
+                <div id="firebaseSetupBox" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-950 space-y-2.5">
+                    <p class="font-bold">Configuração do Firebase não encontrada</p>
+                    <p class="text-amber-900 leading-relaxed">Configure uma URL externa ou cole a configuração abaixo para salvar neste navegador:</p>
+                    <textarea id="firebaseConfigInput" rows="5" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}' class="w-full p-2.5 bg-white border border-amber-300 rounded-lg font-mono text-[11px] text-slate-800 focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
+                    <button type="button" onclick="saveFirebaseConfigFromInput()" class="w-full py-2.5 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs transition">
+                        Salvar Configuração neste Aparelho
+                    </button>
                 </div>
 
                 <!-- Abas Entrar / Cadastrar -->
@@ -194,7 +236,7 @@
                     </svg>
                 </button>
 
-                <!-- Botão Três Barrinhas (Menu Gaveta Backup) no lugar do cifrão -->
+                <!-- Botão Três Barrinhas (Menu Gaveta Backup) -->
                 <button id="btnMenuDrawer" onclick="openBackupDrawer()" class="bg-white/15 hover:bg-white/25 active:scale-95 p-2.5 rounded-xl shrink-0 transition flex items-center justify-center" aria-label="Abrir menu de backup">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -267,6 +309,14 @@
                             <button type="button" data-font-option="1.25" onclick="selectFontScale(1.25)" class="font-step-btn" title="Letra bem grande">A++</button>
                         </div>
                     </div>
+
+                    <!-- Botão de Instalar App dentro da gaveta também -->
+                    <button id="drawerInstallBtn" type="button" onclick="installPWAApp()" class="w-full py-2.5 px-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
+                        </svg>
+                        <span>Instalar Aplicativo</span>
+                    </button>
                 </div>
             </div>
 
@@ -285,7 +335,7 @@
     <!-- Banner de Instalação na Primeira Abertura no Celular -->
     <div id="installAppBanner" class="hidden fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto bg-slate-900 text-white rounded-2xl p-4 shadow-2xl border border-slate-700 fade-in">
         <div class="flex items-center gap-3">
-            <img src="./icons/icon-192.png?v=4" alt="Ícone do App" class="w-12 h-12 rounded-xl shrink-0 border border-white/15">
+            <img src="./icons/icon-192.png" alt="Ícone do App" class="w-12 h-12 rounded-xl shrink-0 border border-white/15">
             <div class="min-w-0 flex-1">
                 <p class="text-sm font-extrabold truncate">Instalar Controle Financeiro</p>
                 <p id="installBannerDesc" class="text-xs text-slate-300 leading-snug mt-0.5">Adicione à tela inicial e à gaveta de apps do seu celular.</p>
@@ -298,7 +348,7 @@
     </div>
 
     <!-- ==================== CONTEÚDO PRINCIPAL ==================== -->
-    <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-5 pb-28">
+    <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-5 pb-36">
 
         <!-- TELA 1: LISTA DE CLIENTES -->
         <section id="viewHome" class="fade-in space-y-5">
@@ -428,7 +478,7 @@
             </button>
 
             <!-- Lista de Compras e Parcelas do Cliente -->
-            <div class="space-y-4">
+            <div class="space-y-4 pb-8">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-500">Compras e Parcelas</h3>
                 
                 <div id="purchasesContainer" class="space-y-4">
@@ -460,10 +510,8 @@
     </main>
 
     <!-- ==================== ÁREA OCULTA PARA RENDERIZAÇÃO DO PRINT (EXTRATO VISUAL) ==================== -->
-    <!-- Este bloco é capturado pelo html2canvas para gerar uma imagem PNG limpa e profissional -->
     <div style="position: fixed; left: -9999px; top: 0; z-index: -1;">
         <div id="receiptCaptureCard" class="w-[420px] bg-white p-6 text-slate-900 font-sans border-2 border-slate-200">
-            <!-- Cabeçalho do Comprovante -->
             <div class="bg-brand-700 text-white p-4 rounded-xl mb-4 flex items-center justify-between">
                 <div>
                     <p class="text-[11px] uppercase tracking-widest text-brand-100 font-semibold">Extrato Financeiro</p>
@@ -474,7 +522,6 @@
                 </div>
             </div>
 
-            <!-- Dados do Cliente no Print -->
             <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 mb-4 space-y-1">
                 <p class="text-xs text-slate-500 uppercase font-bold">Cliente</p>
                 <p id="printClientName" class="text-base font-extrabold text-slate-900">Nome do Cliente</p>
@@ -482,7 +529,6 @@
                 <p id="printClientAddress" class="text-xs text-slate-600">Endereço do Cliente</p>
             </div>
 
-            <!-- Resumo de Valores no Print -->
             <div class="grid grid-cols-3 gap-2 bg-slate-900 text-white p-3.5 rounded-xl mb-4 text-center">
                 <div>
                     <span class="text-[10px] text-slate-400 uppercase block">Total Geral</span>
@@ -498,15 +544,11 @@
                 </div>
             </div>
 
-            <!-- Detalhamento dos Itens e Parcelas no Print -->
             <div class="space-y-3 mb-4">
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-1">Detalhamento das Parcelas</p>
-                <div id="printItemsList" class="space-y-3">
-                    <!-- Preenchido dinamicamente antes da captura -->
-                </div>
+                <div id="printItemsList" class="space-y-3"></div>
             </div>
 
-            <!-- Rodapé do Print -->
             <div class="text-center pt-3 border-t border-slate-200">
                 <p class="text-[11px] text-slate-400 font-medium">Documento gerado pelo Controle Financeiro de Clientes</p>
             </div>
@@ -582,20 +624,20 @@
 
                     <div>
                         <label for="purchaseInstallmentsInput" class="block text-sm font-bold text-slate-700 mb-1">Qtd. Parcelas *</label>
-                        <select id="purchaseInstallmentsInput" onchange="updateInstallmentPreview()" class="w-full px-3.5 py-3 border border-slate-300 rounded-xl text-base font-bold text-slate-900 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
-                            <option value="1">1x (À vista)</option>
-                            <option value="2">2x</option>
-                            <option value="3">3x</option>
-                            <option value="4" selected>4x</option>
-                            <option value="5">5x</option>
-                            <option value="6">6x</option>
-                            <option value="7">7x</option>
-                            <option value="8">8x</option>
-                            <option value="9">9x</option>
-                            <option value="10">10x</option>
-                            <option value="11">11x</option>
-                            <option value="12">12x</option>
-                        </select>
+                        <input
+                            type="number"
+                            id="purchaseInstallmentsInput"
+                            min="1"
+                            max="999"
+                            step="1"
+                            value="4"
+                            required
+                            inputmode="numeric"
+                            oninput="updateInstallmentPreview()"
+                            onchange="updateInstallmentPreview()"
+                            placeholder="Ex: 1, 4, 15, 24..."
+                            class="w-full px-3.5 py-3 border border-slate-300 rounded-xl text-base font-bold text-slate-900 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                        >
                     </div>
                 </div>
 
@@ -604,15 +646,12 @@
                     <input type="date" id="purchaseDateInput" required onchange="updateInstallmentPreview()" class="w-full px-3.5 py-3 border border-slate-300 rounded-xl text-base focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
                 </div>
 
-                <!-- Simulação Automática das Parcelas -->
                 <div class="bg-brand-50 border border-brand-200 rounded-xl p-3.5">
                     <div class="flex items-center justify-between mb-1.5">
                         <span class="text-xs font-bold uppercase text-brand-800">Simulação das Parcelas</span>
                         <span id="previewInstallmentSummary" class="text-xs font-extrabold text-brand-700">4x de R$ 0,00</span>
                     </div>
-                    <div id="previewInstallmentList" class="text-xs text-slate-600 space-y-1 max-h-28 overflow-y-auto pr-1">
-                        <!-- Preenchido via JS -->
-                    </div>
+                    <div id="previewInstallmentList" class="text-xs text-slate-600 space-y-1 max-h-28 overflow-y-auto pr-1"></div>
                 </div>
 
                 <div class="pt-2 flex gap-3">
@@ -638,7 +677,6 @@
                 </button>
             </div>
 
-            <!-- Área de Visualização da Imagem Gerada -->
             <div class="p-4 bg-slate-200/70 overflow-y-auto flex-1 flex flex-col items-center justify-center">
                 <div id="printLoadingSpinner" class="py-10 text-center hidden">
                     <div class="w-10 h-10 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
@@ -647,28 +685,16 @@
                 <img id="generatedPrintImage" src="" alt="Extrato do Cliente" class="w-full max-w-[340px] rounded-xl shadow-lg border border-slate-300 bg-white">
             </div>
 
-            <!-- Botões de Ação (Compartilhar / Baixar / Abrir WhatsApp) -->
             <div class="p-4 bg-white border-t border-slate-200 space-y-2.5 shrink-0">
-                <!-- Botão Principal: Abrir WhatsApp do Cliente -->
                 <button onclick="openClientWhatsApp()" class="w-full bg-whatsapp-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-base py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/>
-                    </svg>
                     <span>Abrir WhatsApp de <span id="btnWhatsAppClientName">Cliente</span></span>
                 </button>
 
-                <!-- Botões Secundários: Compartilhar Arquivo (Celular) e Baixar PNG -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <button id="btnNativeShare" onclick="sharePrintFile()" class="py-2.5 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm transition flex items-center justify-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                        </svg>
                         <span>Enviar Foto</span>
                     </button>
                     <button onclick="downloadPrintImage()" class="py-2.5 px-3 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-sm transition flex items-center justify-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
                         <span>Salvar Print</span>
                     </button>
                 </div>
@@ -677,7 +703,7 @@
         </div>
     </div>
 
-    <!-- ==================== MODAL 4: CONFIRMAÇÃO CUSTOMIZADA (SEM CONFIRM NATIVO) ==================== -->
+    <!-- ==================== MODAL 4: CONFIRMAÇÃO CUSTOMIZADA ==================== -->
     <div id="modalConfirm" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm rounded-2xl shadow-xl p-5 fade-in text-center space-y-4">
             <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto">
@@ -696,15 +722,13 @@
         </div>
     </div>
 
-    <!-- ==================== TOAST DE NOTIFICAÇÃO (FEEDBACK VISUAL) ==================== -->
+    <!-- ==================== TOAST DE NOTIFICAÇÃO ==================== -->
     <div id="toastContainer" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col items-center gap-2 w-full max-w-sm px-4"></div>
 
     <!-- ==================== LÓGICA JAVASCRIPT ==================== -->
     <script>
-        // Chaves de armazenamento no localStorage
         const STORAGE_KEY = 'controle_financeiro_clientes_v1';
         const FONT_STORAGE_KEY = 'controle_financeiro_font_scale_v1';
-
         const FONT_SCALES = [0.92, 1, 1.12, 1.25];
 
         function applyFontScale(scaleVal) {
@@ -731,7 +755,6 @@
             applyFontScale(chosen);
         }
 
-        // Aplica tamanho de letra salvo o mais cedo possível na abertura
         (function initFontImmediate() {
             let savedFont = 1;
             try {
@@ -742,16 +765,15 @@
             applyFontScale(savedFont);
         })();
 
-        // Estado global da aplicação
         let clients = [];
         let selectedClientId = null;
         let lastGeneratedDataUrl = null;
         let lastGeneratedBlob = null;
 
-
-        // ==================== FIREBASE LOGIN, CADASTRO E CONTROLE DE ADMINISTRADOR ====================
         const FIREBASE_CFG_KEY = 'controle_financeiro_firebase_cfg_v1';
         const ADMIN_EMAIL_KEY = 'controle_financeiro_admin_email_v1';
+        const DEFAULT_FIREBASE_CONFIG = null;
+        const REMOTE_CONFIG_URL = 'https://raw.githubusercontent.com/giliardmartins31-dot/Test/refs/heads/main/firebase-config.json';
 
         let fbApp = null;
         let fbAuth = null;
@@ -784,7 +806,6 @@
             const trimmed = (rawText || '').trim();
             if (!trimmed) return null;
 
-            // Suporta tanto JSON puro quanto "const firebaseConfig = { ... };"
             let objCandidate = trimmed;
             const eqIdx = objCandidate.indexOf('=');
             if (eqIdx !== -1 && (objCandidate.slice(0, eqIdx).includes('firebaseConfig') || objCandidate.trim().startsWith('const') || objCandidate.trim().startsWith('let') || objCandidate.trim().startsWith('var'))) {
@@ -794,7 +815,6 @@
                 objCandidate = objCandidate.slice(0, -1).trim();
             }
 
-            // Tenta JSON.parse primeiro; se tiver chaves sem aspas (JS object literal), avalia com segurança
             try {
                 return JSON.parse(objCandidate);
             } catch (_) {
@@ -807,55 +827,59 @@
             }
         }
 
-        function openFirebaseConfigModal() {
-            const savedCfg = localStorage.getItem(FIREBASE_CFG_KEY) || JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
-            const savedAdminEmail = localStorage.getItem(ADMIN_EMAIL_KEY) || '';
-            document.getElementById('firebaseConfigJsonInput').value = savedCfg;
-            document.getElementById('adminEmailConfigInput').value = savedAdminEmail;
-
-            const modal = document.getElementById('modalFirebaseConfig');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+        function isValidFirebaseConfig(cfg) {
+            return Boolean(cfg && typeof cfg === 'object' && cfg.apiKey && cfg.projectId);
         }
 
-        function closeFirebaseConfigModal() {
-            const modal = document.getElementById('modalFirebaseConfig');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+        async function fetchConfigJson(url) {
+            if (!url || typeof url !== 'string' || !url.trim() || url.includes('SEU-LINK-AQUI')) {
+                return null;
+            }
+            const res = await fetch(url.trim(), { cache: 'no-store' });
+            if (!res.ok) return null;
+            const cfg = await res.json();
+            return isValidFirebaseConfig(cfg) ? cfg : null;
         }
 
-        function clearFirebaseConfig() {
-            localStorage.removeItem(FIREBASE_CFG_KEY);
-            localStorage.removeItem(ADMIN_EMAIL_KEY);
-            closeFirebaseConfigModal();
-            showToast('Configuração do Firebase removida deste aparelho.', 'info');
-            initFirebaseAuthGate();
-        }
-
-        function saveFirebaseConfig(event) {
-            event.preventDefault();
-            const rawCfg = document.getElementById('firebaseConfigJsonInput').value;
-            const adminEmail = (document.getElementById('adminEmailConfigInput').value || '').trim().toLowerCase();
+        async function autoLoadFirebaseConfig() {
+            const saved = localStorage.getItem(FIREBASE_CFG_KEY);
+            if (saved) {
+                try {
+                    const parsedSaved = parseFirebaseConfigText(saved);
+                    if (isValidFirebaseConfig(parsedSaved)) return;
+                } catch (_) {}
+            }
 
             try {
-                const parsed = parseFirebaseConfigText(rawCfg);
-                if (!parsed || !parsed.apiKey || !parsed.projectId) {
-                    showToast('Verifique o firebaseConfig: faltam apiKey ou projectId.', 'error');
+                const remoteCfg = await fetchConfigJson(REMOTE_CONFIG_URL);
+                if (remoteCfg) {
+                    localStorage.setItem(FIREBASE_CFG_KEY, JSON.stringify(remoteCfg));
                     return;
                 }
+            } catch (_) {}
 
-                localStorage.setItem(FIREBASE_CFG_KEY, JSON.stringify(parsed, null, 2));
-                if (adminEmail) {
-                    localStorage.setItem(ADMIN_EMAIL_KEY, adminEmail);
-                } else {
-                    localStorage.removeItem(ADMIN_EMAIL_KEY);
+            try {
+                const localCfg = await fetchConfigJson('./firebase-config.json');
+                if (localCfg) {
+                    localStorage.setItem(FIREBASE_CFG_KEY, JSON.stringify(localCfg));
                 }
+            } catch (_) {}
+        }
 
-                closeFirebaseConfigModal();
-                showToast('Firebase configurado! Agora faça seu login ou cadastro.', 'success');
+        function saveFirebaseConfigFromInput() {
+            const raw = document.getElementById('firebaseConfigInput').value;
+            try {
+                const parsed = parseFirebaseConfigText(raw);
+                if (!isValidFirebaseConfig(parsed)) {
+                    showToast('Informe um objeto válido com apiKey e projectId.', 'error');
+                    return;
+                }
+                localStorage.setItem(FIREBASE_CFG_KEY, JSON.stringify(parsed));
+                document.getElementById('firebaseSetupBox').classList.add('hidden');
+                showToast('Configuração salva neste navegador!', 'success');
                 initFirebaseAuthGate();
-            } catch (err) {
-                showToast('Formato do firebaseConfig inválido. Cole o bloco do Firebase.', 'error');
+            } catch (_) {
+                showToast('Formato inválido. Cole o objeto do Firebase corretamente.', 'error');
             }
         }
 
@@ -877,7 +901,6 @@
                     return role;
                 }
 
-                // Se ainda não existe documento para este usuário, verifica se há algum admin cadastrado
                 let assignedRole = 'usuario';
                 if (configuredAdminEmail && userEmail === configuredAdminEmail) {
                     assignedRole = 'admin';
@@ -897,7 +920,6 @@
 
                 return assignedRole;
             } catch (err) {
-                // Fallback caso as regras do Firestore ainda não permitam leitura da coleção
                 if (configuredAdminEmail && userEmail === configuredAdminEmail) {
                     return 'admin';
                 }
@@ -918,24 +940,13 @@
             }
         }
 
-        const DEFAULT_FIREBASE_CONFIG = {
-          apiKey: "AIzaSyCiW5T9NAv3F-4VQqJD-lGHYSFp6HbhKLA",
-          authDomain: "financeiro-crientes.firebaseapp.com",
-          projectId: "financeiro-crientes",
-          storageBucket: "financeiro-crientes.firebasestorage.app",
-          messagingSenderId: "1019430056888",
-          appId: "1:1019430056888:web:43f3b895fc00b4f0b1d54d"
-        };
-
         function initFirebaseAuthGate() {
             const gate = document.getElementById('authGateScreen');
-            const notCfgBox = document.getElementById('firebaseNotConfiguredBox');
-            
-            const rawCfg = localStorage.getItem(FIREBASE_CFG_KEY) || JSON.stringify(DEFAULT_FIREBASE_CONFIG);
+            const setupBox = document.getElementById('firebaseSetupBox');
+            const rawCfg = localStorage.getItem(FIREBASE_CFG_KEY) || (DEFAULT_FIREBASE_CONFIG ? JSON.stringify(DEFAULT_FIREBASE_CONFIG) : '');
 
             if (!rawCfg || typeof firebase === 'undefined') {
-                notCfgBox.classList.remove('hidden');
-                
+                setupBox.classList.remove('hidden');
                 gate.classList.remove('hidden');
                 gate.classList.add('flex');
                 return;
@@ -943,6 +954,9 @@
 
             try {
                 const cfgObj = parseFirebaseConfigText(rawCfg);
+                if (!isValidFirebaseConfig(cfgObj)) {
+                    throw new Error('Configuração incompleta');
+                }
                 if (!fbApp) {
                     fbApp = firebase.initializeApp(cfgObj);
                 } else if (fbApp.options.projectId !== cfgObj.projectId) {
@@ -954,8 +968,7 @@
                 }
                 bindAuthStateListener();
             } catch (err) {
-                notCfgBox.classList.remove('hidden');
-                
+                setupBox.classList.remove('hidden');
                 gate.classList.remove('hidden');
                 gate.classList.add('flex');
             }
@@ -971,8 +984,7 @@
                 fbDb = null;
             }
 
-            document.getElementById('firebaseNotConfiguredBox').classList.add('hidden');
-            
+            document.getElementById('firebaseSetupBox').classList.add('hidden');
 
             if (authListenerAttached) return;
             authListenerAttached = true;
@@ -998,8 +1010,8 @@
         async function handleAuthSubmit(event) {
             event.preventDefault();
             if (!fbAuth) {
-                showToast('Serviço indisponível no momento.', 'error');
-                
+                showToast('Configure o Firebase primeiro.', 'error');
+                document.getElementById('firebaseSetupBox').classList.remove('hidden');
                 return;
             }
 
@@ -1043,24 +1055,19 @@
             gate.classList.add('flex');
         }
 
-        // ==================== INICIALIZAÇÃO ====================
-        window.onload = function () {
-            // Define data padrão de hoje no modal de compra
+        window.onload = async function () {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('purchaseDateInput').value = today;
-
-            // Inicia bloqueio de login/cadastro via Firebase
+            await autoLoadFirebaseConfig();
             initFirebaseAuthGate();
         };
 
-        // Carrega dados do localStorage ou cria cliente de exemplo na primeira abertura
         function loadData() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
                 if (raw) {
                     clients = JSON.parse(raw);
                 } else {
-                    // Cliente de exemplo inicial para facilitar o teste imediato
                     const today = new Date();
                     const formatISO = (d) => d.toISOString().split('T')[0];
                     
@@ -1071,7 +1078,7 @@
 
                     clients = [
                         {
-                            id: 'cli_exemplo_1',
+                            id: 'cli_exemplo _1',
                             name: 'Maria Silva',
                             phone: '(85) 99999-8888',
                             address: 'Rua das Flores, 120 - Centro, Horizonte - CE',
@@ -1100,9 +1107,6 @@
                 clients = [];
             }
         }
-
-
-        // ==================== SINCRONIZAÇÃO DE CLIENTES NO FIRESTORE ====================
         let isSyncingFromCloud = false;
 
         function getOwnerDocRef() {
@@ -1121,9 +1125,7 @@
                     role: currentUserRole,
                     updatedAt: new Date().toISOString()
                 }, { merge: true });
-            } catch (e) {
-                // Mantém dados salvos no localStorage caso regras estejam sendo ajustadas
-            }
+            } catch (e) {}
         }
 
         async function loadClientsFromFirestoreIfAvailable() {
@@ -1158,7 +1160,6 @@
             }
         }
 
-        // ==================== UTILITÁRIOS DE FORMATAÇÃO ====================
         function formatCurrency(value) {
             return Number(value || 0).toLocaleString('pt-BR', {
                 style: 'currency',
@@ -1173,7 +1174,6 @@
             return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
 
-        // Máscara automática para telefone brasileiro (XX) XXXXX-XXXX
         function maskPhone(input) {
             let v = input.value.replace(/\D/g, '');
             if (v.length > 11) v = v.slice(0, 11);
@@ -1186,7 +1186,6 @@
             }
         }
 
-        // Calcula os totais financeiros de um cliente específico
         function calculateClientTotals(client) {
             let total = 0;
             let paid = 0;
@@ -1200,7 +1199,6 @@
                 });
             });
 
-            // Evita problemas de arredondamento de ponto flutuante
             total = Math.round(total * 100) / 100;
             paid = Math.round(paid * 100) / 100;
             const remaining = Math.max(0, Math.round((total - paid) * 100) / 100);
@@ -1208,7 +1206,6 @@
             return { total, paid, remaining };
         }
 
-        // ==================== NAVEGAÇÃO ENTRE TELAS ====================
         function navigateToHome() {
             selectedClientId = null;
             document.getElementById('viewClientDetail').classList.add('hidden');
@@ -1240,13 +1237,11 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ==================== RENDERIZAÇÃO DA TELA INICIAL ====================
         function renderClientList() {
             const container = document.getElementById('clientsListContainer');
             const emptyState = document.getElementById('emptyClientsState');
             const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase().trim();
 
-            // Calcula totais globais
             let globalPending = 0;
             let globalPaid = 0;
             clients.forEach(c => {
@@ -1258,7 +1253,6 @@
             document.getElementById('globalPendingAmount').textContent = formatCurrency(globalPending);
             document.getElementById('globalPaidAmount').textContent = formatCurrency(globalPaid);
 
-            // Filtra clientes pela busca
             const filtered = clients.filter(c => 
                 c.name.toLowerCase().includes(searchTerm) || 
                 (c.phone && c.phone.includes(searchTerm))
@@ -1310,12 +1304,10 @@
             });
         }
 
-        // ==================== RENDERIZAÇÃO DA FICHA DO CLIENTE ====================
         function renderClientDetail() {
             const client = clients.find(c => c.id === selectedClientId);
             if (!client) return;
 
-            // Preenche cabeçalho de dados do cliente
             document.getElementById('detailClientName').textContent = client.name;
             document.getElementById('detailClientPhone').textContent = client.phone || 'Telefone não informado';
             document.getElementById('detailClientAddress').textContent = client.address || 'Endereço não informado';
@@ -1328,7 +1320,6 @@
                 notesEl.classList.add('hidden');
             }
 
-            // Atualiza Resumo Financeiro no Topo
             const stats = calculateClientTotals(client);
             document.getElementById('detailTotalAmount').textContent = formatCurrency(stats.total);
             document.getElementById('detailPaidAmount').textContent = formatCurrency(stats.paid);
@@ -1346,7 +1337,6 @@
                 accountBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300';
             }
 
-            // Renderiza compras e parcelas
             const container = document.getElementById('purchasesContainer');
             const emptyState = document.getElementById('emptyPurchasesState');
             container.innerHTML = '';
@@ -1358,7 +1348,6 @@
                 emptyState.classList.add('hidden');
             }
 
-            // Exibe as compras mais recentes primeiro
             const purchasesReversed = [...client.purchases].reverse();
 
             purchasesReversed.forEach(purchase => {
@@ -1369,10 +1358,8 @@
                 const purchaseCard = document.createElement('div');
                 purchaseCard.className = 'bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden';
 
-                // Cabeçalho do Item Comprado
                 let installmentsHTML = '';
                 purchase.installments.forEach(inst => {
-                    // Quando paga, fica apagada/esmaecida conforme solicitado pelo usuário
                     const isPaid = inst.paid;
                     const rowClass = isPaid 
                         ? 'opacity-50 bg-slate-50/80 border-slate-100' 
@@ -1382,9 +1369,12 @@
                     installmentsHTML += `
                         <div class="p-3.5 border-t ${rowClass} flex items-center justify-between gap-3 transition-all duration-200">
                             <div class="min-w-0">
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-2 flex-wrap">
                                     <span class="text-xs font-extrabold px-2 py-0.5 rounded-md ${isPaid ? 'bg-slate-200 text-slate-600' : 'bg-brand-100 text-brand-700'}">
                                         Parcela ${inst.number}/${inst.total}
+                                    </span>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-800'}">
+                                        ${isPaid ? 'PAGA' : 'EM ABERTO'}
                                     </span>
                                     <span class="text-base ${textStrike}">
                                         ${formatCurrency(inst.amount)}
@@ -1396,20 +1386,12 @@
                                 </p>
                             </div>
 
-                            <!-- Botão Pagar / Pago -->
                             <button onclick="toggleInstallmentPaid('${purchase.id}', '${inst.id}')" class="shrink-0 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-1.5 ${
                                 isPaid 
                                 ? 'bg-emerald-100 text-emerald-800 border border-emerald-200 hover:bg-emerald-200' 
                                 : 'bg-slate-900 text-white hover:bg-brand-600 shadow-xs active:scale-95'
                             }">
-                                ${isPaid ? `
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    <span>Pago</span>
-                                ` : `
-                                    <span>Marcar Pago</span>
-                                `}
+                                ${isPaid ? `<span>Pago</span>` : `<span>Marcar Pago</span>`}
                             </button>
                         </div>
                     `;
@@ -1423,7 +1405,7 @@
                                 ${allPaid ? '<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Quitado</span>' : ''}
                             </div>
                             <p class="text-xs text-slate-500 mt-1">
-                                Valor total: <strong class="text-slate-700">${formatCurrency(purchase.totalAmount)}</strong> • Parcelado em <strong>${totalCount}x</strong> (${paidCount}/${totalCount} pagas)
+                                Valor total: <strong class="text-slate-700">${formatCurrency(purchase.totalAmount)}</strong> • ${totalCount === 1 ? 'À vista / 1x' : `Parcelado em <strong>${totalCount}x</strong>`} (${paidCount}/${totalCount} pagas)
                             </p>
                         </div>
                         <button onclick="confirmDeletePurchase('${purchase.id}', '${escapeHTML(purchase.item)}')" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Excluir esta compra">
@@ -1432,16 +1414,18 @@
                             </svg>
                         </button>
                     </div>
-                    <div>
-                        ${installmentsHTML}
-                    </div>
+                    <div>${installmentsHTML}</div>
                 `;
 
                 container.appendChild(purchaseCard);
             });
+
+            // Espaçador extra ao final da lista para garantir rolagem limpa acima da barra fixa do WhatsApp
+            const bottomSpacer = document.createElement('div');
+            bottomSpacer.className = 'h-24 w-full pointer-events-none';
+            container.appendChild(bottomSpacer);
         }
 
-        // ==================== AÇÕES DE PARCELAS E COMPRAS ====================
         function toggleInstallmentPaid(purchaseId, installmentId) {
             const client = clients.find(c => c.id === selectedClientId);
             if (!client) return;
@@ -1461,11 +1445,10 @@
             if (inst.paid) {
                 showToast(`Parcela ${inst.number}/${inst.total} marcada como PAGA!`, 'success');
             } else {
-                showToast(`Pagamento da parcela ${inst.number}/${inst.total} desfeito.`, 'info');
+                showToast(`Pagamento da parcela ${inst.number}/${inst.total} desfeito (Em Aberto).`, 'info');
             }
         }
 
-        // ==================== MODAIS: CLIENTE ====================
         function openClientModal(isEdit = false) {
             const modal = document.getElementById('modalClient');
             const form = document.getElementById('formClient');
@@ -1507,7 +1490,6 @@
             if (!name || !phone) return;
 
             if (id) {
-                // Atualizar cliente existente
                 const client = clients.find(c => c.id === id);
                 if (client) {
                     client.name = name;
@@ -1520,7 +1502,6 @@
                     showToast('Dados do cliente atualizados!', 'success');
                 }
             } else {
-                // Criar novo cliente
                 const newClient = {
                     id: 'cli_' + Date.now(),
                     name,
@@ -1557,7 +1538,6 @@
             );
         }
 
-        // ==================== MODAIS: COMPRA E PARCELAS ====================
         function openPurchaseModal() {
             const modal = document.getElementById('modalPurchase');
             document.getElementById('formPurchase').reset();
@@ -1578,7 +1558,6 @@
             modal.classList.remove('flex');
         }
 
-        // Gera a lista de parcelas com datas mensais e ajuste de centavos na última parcela
         function buildInstallmentsArray(totalAmount, count, firstDueDateISO) {
             const installments = [];
             const baseAmount = Math.floor((totalAmount / count) * 100) / 100;
@@ -1587,9 +1566,7 @@
             const [year, month, day] = firstDueDateISO.split('-').map(Number);
 
             for (let i = 0; i < count; i++) {
-                // Calcula vencimento mês a mês preservando o dia quando possível
                 const dueObj = new Date(year, (month - 1) + i, day);
-                // Se o mês seguinte não tiver o dia (ex: 31 de jan -> fev), ajusta para o último dia do mês
                 if (dueObj.getMonth() !== ((month - 1 + i) % 12 + 12) % 12) {
                     dueObj.setDate(0);
                 }
@@ -1618,7 +1595,9 @@
 
         function updateInstallmentPreview() {
             const amount = parseFloat(document.getElementById('purchaseAmountInput').value) || 0;
-            const count = parseInt(document.getElementById('purchaseInstallmentsInput').value) || 1;
+            const rawValue = document.getElementById('purchaseInstallmentsInput').value;
+            const parsedCount = parseInt(rawValue, 10);
+            const count = (!isNaN(parsedCount) && parsedCount >= 1) ? parsedCount : 1;
             const dateStr = document.getElementById('purchaseDateInput').value || new Date().toISOString().split('T')[0];
 
             const previewSummary = document.getElementById('previewInstallmentSummary');
@@ -1648,10 +1627,10 @@
 
             const item = document.getElementById('purchaseItemInput').value.trim();
             const totalAmount = parseFloat(document.getElementById('purchaseAmountInput').value);
-            const count = parseInt(document.getElementById('purchaseInstallmentsInput').value);
+            const count = parseInt(document.getElementById('purchaseInstallmentsInput').value, 10);
             const firstDueDate = document.getElementById('purchaseDateInput').value;
 
-            if (!item || isNaN(totalAmount) || totalAmount <= 0 || !firstDueDate) return;
+            if (!item || isNaN(totalAmount) || totalAmount <= 0 || isNaN(count) || count < 1 || !firstDueDate) return;
 
             const installments = buildInstallmentsArray(totalAmount, count, firstDueDate);
 
@@ -1668,7 +1647,7 @@
             saveData();
             closePurchaseModal();
             renderClientDetail();
-            showToast(`Compra "${item}" parcelada em ${count}x!`, 'success');
+            showToast(count === 1 ? `Compra "${item}" gerada em 1x!` : `Compra "${item}" parcelada em ${count}x!`, 'success');
         }
 
         function confirmDeletePurchase(purchaseId, itemName) {
@@ -1688,12 +1667,10 @@
             );
         }
 
-        // ==================== PRINT VISUAL (HTML2CANVAS) + ENVIO WHATSAPP ====================
         async function generateAndPreviewReceipt() {
             const client = clients.find(c => c.id === selectedClientId);
             if (!client) return;
 
-            // Preenche o cartão oculto do extrato antes de capturar o print
             const stats = calculateClientTotals(client);
             const todayStr = formatDateBR(new Date().toISOString().split('T')[0]);
 
@@ -1706,7 +1683,6 @@
             document.getElementById('printPaidVal').textContent = formatCurrency(stats.paid);
             document.getElementById('printRemainingVal').textContent = formatCurrency(stats.remaining);
 
-            // Monta a lista de compras e parcelas no cartão do print
             const printItemsList = document.getElementById('printItemsList');
             printItemsList.innerHTML = '';
 
@@ -1738,7 +1714,6 @@
                 });
             }
 
-            // Abre o modal de pré-visualização com spinner
             const modal = document.getElementById('modalPrintPreview');
             const imgEl = document.getElementById('generatedPrintImage');
             const spinner = document.getElementById('printLoadingSpinner');
@@ -1750,12 +1725,11 @@
             modal.classList.add('flex');
 
             try {
-                // Aguarda um frame para garantir renderização do DOM oculto
                 await new Promise(resolve => setTimeout(resolve, 120));
 
                 const captureEl = document.getElementById('receiptCaptureCard');
                 const canvas = await html2canvas(captureEl, {
-                    scale: 2, // Alta resolução para ficar nítido no WhatsApp
+                    scale: 2,
                     backgroundColor: '#ffffff',
                     useCORS: true
                 });
@@ -1763,7 +1737,6 @@
                 lastGeneratedDataUrl = canvas.toDataURL('image/png');
                 imgEl.src = lastGeneratedDataUrl;
 
-                // Converte para Blob/File para suportar compartilhamento direto de arquivo no celular
                 canvas.toBlob(blob => {
                     lastGeneratedBlob = blob;
                 }, 'image/png');
@@ -1783,7 +1756,6 @@
             modal.classList.remove('flex');
         }
 
-        // Baixa a imagem PNG gerada no dispositivo
         function downloadPrintImage() {
             if (!lastGeneratedDataUrl) return;
             const client = clients.find(c => c.id === selectedClientId);
@@ -1798,7 +1770,6 @@
             showToast('Print salvo na galeria/downloads!', 'success');
         }
 
-        // Compartilha a imagem diretamente via Web Share API (ideal para celulares Android/iPhone)
         async function sharePrintFile() {
             const client = clients.find(c => c.id === selectedClientId);
             if (!client || !lastGeneratedBlob) {
@@ -1823,18 +1794,15 @@
                     }
                 }
             } else {
-                // Fallback para desktop: baixa a imagem automaticamente e avisa
                 downloadPrintImage();
                 showToast('Imagem baixada! Agora clique em "Abrir WhatsApp" e anexe a foto.', 'info');
             }
         }
 
-        // Abre diretamente a conversa no WhatsApp do cliente cadastrado
         function openClientWhatsApp() {
             const client = clients.find(c => c.id === selectedClientId);
             if (!client) return;
 
-            // Limpa o telefone e adiciona DDI 55 (Brasil) se necessário
             let digits = (client.phone || '').replace(/\D/g, '');
             if (digits.length === 10 || digits.length === 11) {
                 digits = '55' + digits;
@@ -1842,7 +1810,6 @@
 
             const stats = calculateClientTotals(client);
             
-            // Monta mensagem resumida para acompanhar o print
             let message = `Olá *${client.name}*, tudo bem? Segue o resumo atualizado das suas compras:\n\n`;
             message += `💰 *Valor Total:* ${formatCurrency(stats.total)}\n`;
             message += `✅ *Total Pago:* ${formatCurrency(stats.paid)}\n`;
@@ -1857,7 +1824,6 @@
             window.open(waUrl, '_blank');
         }
 
-        // ==================== MODAL DE CONFIRMAÇÃO E TOAST ====================
         function openConfirmModal(title, message, onConfirmCallback) {
             document.getElementById('confirmModalTitle').textContent = title;
             document.getElementById('confirmModalMessage').textContent = message;
@@ -1897,8 +1863,6 @@
             }, 3000);
         }
 
-
-        // ==================== GAVETA DE BACKUP (SALVAR / CARREGAR) ====================
         function openBackupDrawer() {
             const drawer = document.getElementById('backupDrawer');
             drawer.classList.remove('hidden');
@@ -1974,7 +1938,6 @@
             reader.readAsText(file, 'utf-8');
         }
 
-        // ==================== PWA SERVICE WORKER & INSTALAÇÃO NO CELULAR ====================
         let deferredInstallPrompt = null;
 
         function isStandaloneMode() {
@@ -2020,11 +1983,11 @@
                 deferredInstallPrompt = null;
                 document.getElementById('installAppBanner').classList.add('hidden');
                 if (choiceResult.outcome === 'accepted') {
-                    showToast('Aplicativo instalado na tela inicial e na gaveta de apps!', 'success');
+                    showToast('Aplicativo instalado na tela inicial!', 'success');
                 }
             } else {
                 document.getElementById('installAppBanner').classList.add('hidden');
-                showToast('Use o menu do navegador e toque em "Adicionar à tela inicial".', 'info');
+                showToast('No Chrome, toque nos 3 pontinhos e em "Instalar aplicativo" ou "Adicionar à tela inicial".', 'info');
             }
         }
 
@@ -2035,7 +1998,6 @@
 
         window.addEventListener('appinstalled', () => {
             document.getElementById('installAppBanner').classList.add('hidden');
-            
             showToast('Aplicativo instalado com sucesso!', 'success');
         });
 
@@ -2044,20 +2006,19 @@
                 if ('caches' in window) {
                     caches.keys().then((keys) => {
                         keys.forEach((k) => {
-                            if (k !== 'controle-financeiro-pwa-v4') {
+                            if (k !== 'controle-financeiro-pwa') {
                                 caches.delete(k);
                             }
                         });
                     });
                 }
-                navigator.serviceWorker.register('./sw.js?v=4').then((reg) => {
+                navigator.serviceWorker.register('./sw.js').then((reg) => {
                     reg.update().catch(() => {});
                 }).catch(() => {});
                 setTimeout(showFirstVisitInstallPromptIfNeeded, 700);
             });
         }
 
-        // Previne XSS em textos inseridos pelo usuário
         function escapeHTML(str) {
             if (!str) return '';
             return str.replace(/[&<>"']/g, function (m) {
@@ -2071,60 +2032,7 @@
             });
         }
 
-        // ==================== ANIMAÇÕES HTML5 CANVAS & ÍCONE DINÂMICO ====================
-        function generateCanvasAppIcon(size) {
-            const c = document.createElement('canvas');
-            c.width = size;
-            c.height = size;
-            const ctx = c.getContext('2d');
-
-            const grad = ctx.createLinearGradient(0, 0, size, size);
-            grad.addColorStop(0, '#2563eb');
-            grad.addColorStop(1, '#1e3a8a');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, size, size);
-
-            ctx.strokeStyle = 'rgba(147, 197, 253, 0.75)';
-            ctx.lineWidth = size * 0.04;
-            ctx.beginPath();
-            ctx.arc(size * 0.5, size * 0.5, size * 0.34, 0, Math.PI * 2);
-            ctx.stroke();
-
-            ctx.fillStyle = '#ffffff';
-            ctx.font = `800 ${Math.round(size * 0.44)}px Inter, sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('$', size * 0.5, size * 0.52);
-
-            const bx = size * 0.73;
-            const by = size * 0.73;
-            const br = size * 0.16;
-            ctx.fillStyle = '#10b981';
-            ctx.beginPath();
-            ctx.arc(bx, by, br, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = size * 0.032;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.beginPath();
-            ctx.moveTo(bx - br * 0.42, by + br * 0.04);
-            ctx.lineTo(bx - br * 0.1, by + br * 0.36);
-            ctx.lineTo(bx + br * 0.46, by - br * 0.32);
-            ctx.stroke();
-
-            return c.toDataURL('image/png');
-        }
-
         function initDynamicCanvasAnimations() {
-            // Garante ícones válidos mesmo se carregado isoladamente
-            const icon192 = generateCanvasAppIcon(192);
-            document.querySelectorAll('img[src*="icon-192.png"]').forEach(img => {
-                img.onerror = () => { img.src = icon192; };
-            });
-
-            // 1. Canvas animado de partículas financeiras na tela de login
             const authCanvas = document.getElementById('authBgCanvas');
             if (authCanvas) {
                 const ctx = authCanvas.getContext('2d');
@@ -2190,7 +2098,6 @@
                 drawAuthCanvas();
             }
 
-            // 2. Canvas animado de ondas suaves no card de resumo da carteira
             const sumCanvas = document.getElementById('summaryCardsCanvas');
             if (sumCanvas) {
                 const sctx = sumCanvas.getContext('2d');
@@ -2240,7 +2147,6 @@
         }
 
         window.addEventListener('DOMContentLoaded', initDynamicCanvasAnimations);
-
     </script>
 </body>
 </html>
